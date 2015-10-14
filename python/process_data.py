@@ -3,11 +3,13 @@ import json # For loading the data
 # For debugging purposes
 try:
 	import IPython as ipy
-except:
+except ImportError:
 	print "Couldn't import IPython"
 
-import nltk # Natural Language Processing Library
-import numpy as np # Numberical Python Library
+import nltk # Natural Language Processing Library, run nltk.download() to get english dictionary and such
+import numpy as np # Numerical Python Library
+from urllib import urlopen
+from bs4 import BeautifulSoup
 
 """
 Keys: We must implement the whole thing in scala once we're done 
@@ -25,6 +27,11 @@ NAICS (North America Industry Classification System)
 """
 
 with open('../challenge_set.json') as data_file:
-	res = json.load(data_file)
+	businesses = json.load(data_file)
 
-ipy.embed()
+for business in businesses:
+	for url in business['website']:
+		html = urlopen(url).read().decode('utf8')
+		raw = BeautifulSoup(html).get_text()
+		tokens = nltk.word_tokenize(raw)
+		ipy.embed()
