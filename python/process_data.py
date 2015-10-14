@@ -7,6 +7,7 @@ except ImportError:
 	print "Couldn't import IPython"
 
 import nltk # Natural Language Processing Library, run nltk.download() to get english dictionary and such
+from nltk.corpus import wordnet
 import numpy as np # Numerical Python Library
 from urllib import urlopen
 from bs4 import BeautifulSoup
@@ -33,5 +34,11 @@ for business in businesses:
 	for url in business['website']:
 		html = urlopen(url).read().decode('utf8')
 		raw = BeautifulSoup(html).get_text()
-		tokens = nltk.word_tokenize(raw)
+		tokens = nltk.wordpunct_tokenize(raw)
+		text = nltk.Text(tokens)
+		x = []
+		for word in text.tokens:
+			if wordnet.synsets(word):
+			  x.append(word)
+		print x
 		ipy.embed()
