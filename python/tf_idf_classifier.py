@@ -1,6 +1,7 @@
 import json
 import util
 import IPython as ipy
+import bisect
 from random import shuffle
 
 # TODO decide when to not classify
@@ -18,8 +19,7 @@ with open('../naics_list.json') as data_file:
 # frequency weighting
 shuffle(businesses)
 for business in businesses:
-  best_sim = 0.0
-  best_naic = 0
+  l = []
   for naic in naics:
     if ADD_SYNONYMS:
       business_desc = util.add_synonyms_to_text(business['description'])
@@ -37,9 +37,9 @@ for business in businesses:
     t_d_sim = util.cosine_sim(business_name, naic_desc)
     sim = .1*t_t_sim+.4*d_t_sim+.1*t_d_sim+.3*d_d_sim
     # sim = .4*t_t_sim+.2*d_t_sim+.1*t_d_sim+.1*d_d_sim
-    if sim > best_sim:
-      best_naic = naic
-      best_sim = sim
+    bisect.insort(l, (sim, naic))
+  l = l[::-1]
+  best_naic = l[0]
   print ""
   print business['name']
   print business['description']
