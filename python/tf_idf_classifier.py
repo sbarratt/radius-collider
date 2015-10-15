@@ -40,9 +40,10 @@ for business in businesses:
     if sim > best_sim:
       best_naic = naic
       best_sim = sim
+  print ""
   print business['name']
   print business['description']
-  print "\nCLASSIFIED AS"
+  print "\nCLASSIFIED AS\n"
   print best_naic['title']
   print best_naic['description']
-  ipy.embed()
+  print "------------------------------------"
