@@ -19,4 +19,4 @@ def cosine_sim(text1, text2):
 
 print cosine_sim('a little bird', 'a little bird')
 print cosine_sim('a little bird', 'a little bird chirps')
-print cosine_sim('a little bird', 'a fowl')
+print cosine_sim('a little bird', 'a big dog barks')
