@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Radius Classifier</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/extra.css') }}">
+  </head>
+  <body>
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-xs-4">
+          <div class="table-responsive">
+            <table class="table">
+              <tbody>
+                <tr>
+                  <th scope="row">Name</th>
+                  <td>{{business['name']}}</td>
+                </tr>
+                <tr>
+                  <th scope="row">Description</th>
+                  <td>{{business['description']}}</td>
+                </tr>
+                <tr>
+                  <th scope="row">id</th>
+                  <td>{{business['unique_id']}}</td>
+                </tr>
+                {% for website in business['website'] %}
+                <tr>
+                  <th scope="row">Website</th>
+                  <td><a href="{{website}}">{{website}}</a></td>
+                 </tr>
+                {% endfor %}
+                <tr>
+                  <th scope="row">Address</th>
+                  <td>{{business['address']}}</td>
+                </tr>
+            </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="col-xs-8 guesses">
+<!--           <div class="row">
+            <div class="col-xs-1">
+              Choose</b>
+            </div>
+            <div class="col-xs-1">
+              Score</b>
+            </div>
+            <div class="col-xs-1">
+              NAICS Id</b>
+            </div>
+            <div class="col-xs-7">
+              Title</b>
+            </div>
+            <div class="col-xs-2">
+              Description</b>
+            </div>
+          </div> -->
+          <!-- <div class="guesses"> -->
+          {% for guess in guesses %}
+            <div class="well well-sm">
+              <div class="row">
+                <div class="col-xs-2">
+                  <form  method="post" action="/c/{{business['unique_id']}}/{{guess[0]['code']}}">
+                    <input type="submit" class="btn btn-success" />
+                  </form>
+                </div>
+                <div class="col-xs-2">
+                  <b>Score: </b>{{guess[1]}}
+                </div>
+                <div class="col-xs-2">
+                  <b>Code: </b>{{guess[0]['code']}}
+                </div>
+                <div class="col-xs-4">
+                  {{guess[0]['title']}}
+                </div>
+                <div class="col-xs-2">
+                  <button type="button" class="btn btn-default" data-toggle="popover" data-placement="bottom" data-container="body" data-content="{{guess[0]['description']}}">
+                      Description
+                  </button>
+                </div>
+              </div>
+            </div>
+          {% endfor %}
+          <!-- </div> -->
+        </div>
+      </div>
+      </div> <!-- /container -->
+    </body>
+    <script src="http://code.jquery.com/jquery-latest.min.js"></script>
+    <script src="{{ url_for('static', filename='extra/main.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
+    <script type="text/javascript">
+      $(function () {
+        $('[data-toggle="popover"]').popover()
+      })
+    </script>
+</html>

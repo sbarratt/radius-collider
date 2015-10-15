@@ -1,0 +1,9 @@
+.popover{
+    max-width: 100% !important;
+}
+
+.guesses {
+  overflow: scroll;
+  max-height: 700px;
+
+}

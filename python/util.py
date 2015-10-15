@@ -9,6 +9,7 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 
 from urllib import urlopen
 from bs4 import BeautifulSoup
+import json
 
 import IPython as ipy
 
@@ -35,7 +36,7 @@ def add_synonyms(words):
     try:
       synonyms = wn.synset(nltk_id).lemma_names()
       if type(synonyms) == str:
-        more_words += [w.replace('_',' ')]
+        more_words += [synonyms.replace('_',' ')]
       else:
         for w in synonyms:
           more_words += [w.replace('_',' ')]
@@ -67,6 +68,15 @@ def get_tokenized_url_content(url):
   html = urlopen(url).read().decode('utf8')
   raw = BeautifulSoup(html).get_text()
   return clean_paragraph(raw)
+
+def get_naics_data_for_level(code_length):
+  with open('../naics_list.json', 'r') as jsonfile:
+    naics_data = json.load(jsonfile)
+  results = []
+  for naics_item in naics_data:
+    if len(str(naics_item['code'])) == code_length:
+      results.append(naics_item)
+  return results
 
 if __name__ == '__main__':
   print add_synonyms(['dog'])
