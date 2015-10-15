@@ -13,7 +13,7 @@ with open('../NAICS_descriptions.csv', 'r') as descriptions:
     i = 0
     for row in reader:
       i += 1
-      print i
+      print i # just to know status of process
       code = row[0]
       r = requests.get(url(code))
       obj = json.loads(r.content)
@@ -28,7 +28,6 @@ with open('../NAICS_descriptions.csv', 'r') as descriptions:
           "title": obj.get("title")
         }
         results.append(newObj)
-
 
 with open('../data.json', 'w') as jsonfile:
   json.dump(results, jsonfile)
