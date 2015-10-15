@@ -8,13 +8,38 @@ except ImportError:
 
 import nltk # Natural Language Processing Library, run nltk.download() to get english dictionary and such
 from nltk.corpus import wordnet
+from nltk.tokenize import RegexpTokenizer
+from nltk.corpus import stopwords
+from nltk.stem import WordNetLemmatizer
 import numpy as np # Numerical Python Library
 from urllib import urlopen
 from bs4 import BeautifulSoup
 
+"""
+
+nltk.corpus words, stopwords
+from nltk.stem import WordNetLemmatizer
+WordPunctTokenizer
+BiggramCollocationFinder
+BiggramAssocMeasures
+lemma_names
+"""
+
+stopset = set(stopwords.words('english'))
+tokenizer = RegexpTokenizer(r'\w+')
+wordnet_lemmatizer = WordNetLemmatizer()
+
 def clean_paragraph(par):
 	par.decode('utf-8')
-	tokens = nltk.word_tokenize(par)
+	tokens = tokenizer.tokenize(par)
+	tokens = [w for w in tokens if not w in stopset]
+	x = []
+	for word in tokens:
+		if wordnet.synsets(word):
+			if len(word) > 1:
+				x.append(wordnet_lemmatizer.lemmatize(word.lower()))
+	#lemma-ize
+
 	ipy.embed()
 
 clean_paragraph('Equal Justice For All. At the Law Offices of Wolfley & Wolfley, P.S., in Port Angeles, WA, you will get aggressive legal representation in your personal injury or workers\u2019 compensation case to help you get the compensation you deserve...')
