@@ -40,7 +40,7 @@ def clean_paragraph(par):
 				x.append(wordnet_lemmatizer.lemmatize(word.lower()))
 	#lemma-ize
 
-	ipy.embed()
+	return x
 
 clean_paragraph('Equal Justice For All. At the Law Offices of Wolfley & Wolfley, P.S., in Port Angeles, WA, you will get aggressive legal representation in your personal injury or workers\u2019 compensation case to help you get the compensation you deserve...')
 
