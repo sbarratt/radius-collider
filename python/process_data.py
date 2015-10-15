@@ -12,6 +12,13 @@ import numpy as np # Numerical Python Library
 from urllib import urlopen
 from bs4 import BeautifulSoup
 
+def clean_paragraph(par):
+	par.decode('utf-8')
+	tokens = nltk.word_tokenize(par)
+	ipy.embed()
+
+clean_paragraph('Equal Justice For All. At the Law Offices of Wolfley & Wolfley, P.S., in Port Angeles, WA, you will get aggressive legal representation in your personal injury or workers\u2019 compensation case to help you get the compensation you deserve...')
+
 """
 Keys: We must implement the whole thing in scala once we're done 
 (to maximize points, possibly put it in spark)
@@ -34,6 +41,7 @@ for business in businesses:
 	for url in business['website']:
 		html = urlopen(url).read().decode('utf8')
 		raw = BeautifulSoup(html).get_text()
+		ipy.embed()
 		tokens = nltk.wordpunct_tokenize(raw)
 		text = nltk.Text(tokens)
 		x = []
