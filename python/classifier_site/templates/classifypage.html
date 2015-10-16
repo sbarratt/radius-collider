@@ -12,87 +12,99 @@
     <div class="container-fluid">
       <div class="row">
         <div class="col-xs-4">
-          <h3>Bussiness</h3>
-        </div>
-        <div class="col-xs-8">
-          <h3>Most common code: {{common_code}}</h3>
-        </div>
-      </div>
-      <div class="row">
-        <div class="col-xs-4">
-          <div class="table-responsive">
-            <table class="table">
-              <tbody>
-                <tr>
-                  <th scope="row">Name</th>
-                  <td>{{business['name']}}</td>
-                </tr>
-                <tr>
-                  <th scope="row">Description</th>
-                  <td>{{business['description']}}</td>
-                </tr>
-                <tr>
-                  <th scope="row">id</th>
-                  <td>{{business['unique_id']}}</td>
-                </tr>
-                {% for website in business['website'] %}
-                <tr>
-                  <th scope="row">Website</th>
-                  <td><a href="{{website}}">{{website}}</a></td>
-                 </tr>
-                {% endfor %}
-                <tr>
-                  <th scope="row">Address</th>
-                  <td>{{business['address']}}</td>
-                </tr>
-            </tbody>
-            </table>
+          <div class="row">
+            <div class="col-xs-12 buckets">
+              <div class="table-responsive">
+                <table class="table">
+                  <tbody>
+                    <tr>
+                      <th scope="row">Name</th>
+                      <td>{{business['name']}}</td>
+                    </tr>
+                    <tr>
+                      <th scope="row">Description</th>
+                      <td>{{business['description']}}</td>
+                    </tr>
+                    <tr>
+                      <th scope="row">id</th>
+                      <td>{{business['unique_id']}}</td>
+                    </tr>
+                    {% for website in business['website'] %}
+                    <tr>
+                      <th scope="row">Website</th>
+                      <td><a href="{{website}}">{{website}}</a></td>
+                     </tr>
+                    {% endfor %}
+                    <tr>
+                      <th scope="row">Address</th>
+                      <td>{{business['address']}}</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+            <div class="col-xs-12 buckets">
+              <table class="table table-condensed">
+                <thead>
+                  <tr>
+                    <th></th>
+                    <th>Code</th>
+                    <th>Score</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for code in code_list %}
+                  <tr>
+                    <td>
+                      <form  method="post" action="/c/{{business['unique_id']}}/{{code[0]}}">
+                        <button type="submit" class="btn btn-success">
+                          <span class="glyphicon glyphicon-ok"></span>
+                        </button>
+                      </form>
+                    </td>
+                    <td>{{code[0]}}</td>
+                    <td>{{code[1]}}</td>
+                  </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
         <div class="col-xs-8 guesses">
-<!--           <div class="row">
-            <div class="col-xs-1">
-              Choose</b>
-            </div>
-            <div class="col-xs-1">
-              Score</b>
-            </div>
-            <div class="col-xs-1">
-              NAICS Id</b>
-            </div>
-            <div class="col-xs-7">
-              Title</b>
-            </div>
-            <div class="col-xs-2">
-              Description</b>
-            </div>
-          </div> -->
-          <!-- <div class="guesses"> -->
-          {% for guess in guesses %}
-            <div class="well well-sm">
-              <div class="row">
-                <div class="col-xs-2">
+          <table class="table">
+            <thead>
+              <tr>
+                <th></th>
+                <th>Score</th>
+                <th>Code</th>
+                <th>Title</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for guess in guesses %}
+              <tr>
+                <td>
                   <form  method="post" action="/c/{{business['unique_id']}}/{{guess[1]['code']}}">
-                    <input type="submit" class="btn btn-success" />
+                    <button type="submit" class="btn btn-success">
+                      <span class="glyphicon glyphicon-ok"></span>
+                    </button>
                   </form>
-                </div>
-                <div class="col-xs-2">
-                  <b>Score: </b>{{guess[0]}}
-                </div>
-                <div class="col-xs-2">
-                  <b>Code: </b>{{guess[1]['code']}}
-                </div>
-                <div class="col-xs-4">
-                  {{guess[1]['title']}}
-                </div>
-                <div class="col-xs-2">
-                  <button type="button" class="btn btn-default" data-toggle="popover" data-placement="bottom" data-container="body" data-content="{{guess[1]['description']}}">
+                </td>
+                <td>{{guess[0]}}</td>
+                <td>{{guess[1]['code']}}</td>
+                <td>{{guess[1]['title']}}</td>
+                <td>
+                  <button type="button" class="btn btn-info" data-toggle="popover" data-placement="bottom" data-container="body" data-content="{{guess[1]['description']}}">
                       Description
                   </button>
-                </div>
-              </div>
-            </div>
-          {% endfor %}
+                </td>
+
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
           <!-- </div> -->
         </div>
       </div>

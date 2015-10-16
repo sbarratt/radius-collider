@@ -13,8 +13,8 @@ def classifypage():
   guesses = []
   current_business = unclassified_businesses.pop()
   guesses = util.score_business(current_business, naics_items, ADD_SYNONYMS=True)
-  common_code = get_most_common_code(guesses)
-  return render_template('classifypage.html', business=current_business, guesses=guesses, common_code=common_code)
+  code_list = bucket_guesses(guesses)
+  return render_template('classifypage.html', business=current_business, guesses=guesses, code_list=code_list)
 
 @app.route('/c/<business_uid>/<naics_code>', methods=['POST'])
 def classifyBusiness(business_uid, naics_code):
@@ -54,13 +54,15 @@ def get_naics_data_for_level(code_length):
       results.append(naics_item)
   return results
 
-def get_most_common_code(guesses, threshold=0):
+def bucket_guesses(guesses, threshold=0):
   codes = {}
   for score, naic in guesses:
     if score > threshold:
       key = str(naic['code'])[:3]
       codes[key] = score + codes[key] if key in codes else score
-  return max(codes, key=codes.get)
+
+  code_list = sorted(codes.items(), key=lambda x: x[1], reverse=True)
+  return code_list
 
 if __name__ == "__main__":
   naics_items = get_naics_data_for_level(6)
