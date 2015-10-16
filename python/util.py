@@ -10,7 +10,9 @@ import nltk, string
 from sklearn.feature_extraction.text import TfidfVectorizer
 
 from urllib import urlopen
-from bs4 import BeautifulSoup
+# from bs4 import BeautifulSoup
+import json
+import bisect
 
 import IPython as ipy
 
@@ -37,7 +39,7 @@ def add_synonyms(words):
     try:
       synonyms = wn.synset(nltk_id).lemma_names()
       if type(synonyms) == str:
-        more_words += [w.replace('_',' ')]
+        more_words += [synonyms.replace('_',' ')]
       else:
         for w in synonyms:
           more_words += [w.replace('_',' ')]
@@ -65,10 +67,34 @@ def clean_paragraph(text):
         x.append(wordnet_lemmatizer.lemmatize(word.lower())) #lemmatize and lower case
   return x
 
-def get_tokenized_url_content(url):
-  html = urlopen(url).read().decode('utf8')
-  raw = BeautifulSoup(html).get_text()
-  return clean_paragraph(raw)
+# def get_tokenized_url_content(url):
+#   html = urlopen(url).read().decode('utf8')
+#   raw = BeautifulSoup(html).get_text()
+#   return clean_paragraph(raw)
+
+
+def score_business(business, naics, ADD_SYNONYMS=False):
+  l = []
+  for naic in naics:
+    if ADD_SYNONYMS:
+      business_desc = add_synonyms_to_text(business['description'])
+      business_name = add_synonyms_to_text(business['name'])
+      naic_title = add_synonyms_to_text(naic['title'])
+      naic_desc = add_synonyms_to_text(naic['description'])
+    else:
+      business_desc = business['description']
+      business_name = business['name']
+      naic_desc = naic['description']
+      naic_title = naic['title']
+    d_d_sim = cosine_sim(business_desc, naic_desc)
+    t_t_sim = cosine_sim(business['name'], naic['title'])
+    d_t_sim = cosine_sim(business_desc, naic_title)
+    t_d_sim = cosine_sim(business_name, naic_desc)
+    sim = .3*t_t_sim+.4*d_t_sim+.1*t_d_sim+.1*d_d_sim
+    # sim = .4*t_t_sim+.2*d_t_sim+.1*t_d_sim+.1*d_d_sim
+    bisect.insort(l, (sim, naic))
+  l = l[::-1]
+  return l
 
 if __name__ == '__main__':
   print word2vec_sim("cat", "cat is a dog")
