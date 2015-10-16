@@ -5,6 +5,7 @@ if __name__ == '__main__' and __package__ is None:
   import json
   import csv
   import util
+  import loader
 
 app = Flask(__name__)
 
@@ -21,33 +22,28 @@ def classifyBusiness(business_uid, naics_code):
     if request.method == 'POST':
       with open('classified_set.csv', 'a') as classified_set:
         wr = csv.writer(classified_set)
-        wr.writerow( ( business_uid, naics_code ) )
+        wr.writerow( ( business_uid, naics_code) )
       return redirecc
       t('/classify')
     else:
         return abort(405)  # 405 Method Not Allowed
 
 def get_unclassified_businesses():
-  with open('challenge_set.json', 'r') as data_file:
-    businesses = json.load(data_file)
-    unclassified = []
-    ids = get_classified_business_ids()
-    for b in businesses:
-      if b['unique_id'] not in ids:
-        unclassified.append(b)
-    return unclassified
+  businesses = loader.get_challengeset()
+  unclassified = []
+  ids = get_classified_business_ids()
+  for b in businesses:
+    if b['unique_id'] not in ids:
+      unclassified.append(b)
+  return unclassified
 
 def get_classified_business_ids():
-  with open('classified_set.csv', 'r') as data_file:
-    reader = csv.reader(data_file)
-    ids = []
-    for row in reader:
-      ids.append(row[0])
-    return ids
+  classified_set = loader.get_classifiedset()
+  ids = []
+  return classified_set.keys()
 
 def get_naics_data_for_level(code_length):
-  with open('naics_list.json', 'r') as jsonfile:
-    naics_data = json.load(jsonfile)
+  naics_data = loader.get_naicslist()
   results = []
   for naics_item in naics_data:
     if len(str(naics_item['code'])) == code_length:

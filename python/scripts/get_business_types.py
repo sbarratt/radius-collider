@@ -13,18 +13,6 @@ from util import cosine_sim
 import requests
 import json
 
-class GoogleApi:
-  def __init__(self):
-    self.api_key = 'AIzaSyAQOpIyo2L-6SpL3e5lylN-dnahV9MPC5I' #we're kind of limited to 2,500 requests / day
-
-  def decode_address(self, address):
-    # Input: address (string)
-    # Output: lat, lon (int)
-    uri = 'https://maps.googleapis.com/maps/api/geocode/json?address=%s&key=%s' % (address, self.api_key)
-    resp = json.loads(requests.get(uri).content)
-    temp = resp['results'][0]['geometry']['location']
-    return temp['lat'], temp['lng']
-
 # if __name__ == '__main__':
 #   gapi = GoogleApi()
 #   print gapi.decode_address('2327 warring st')
@@ -44,8 +32,7 @@ def get_place_id(address):
   resp = json.loads(requests.get(uri).content)
   return resp['results'][0]['types']
 
-def get_places(address):
-  lat, lng = gapi.decode_address(address) #helps to base it off latitude and longitude then put in a radius
+def get_places(lat,lng):
   # uri = 'https://maps.googleapis.com/maps/api/place/textsearch/json?query=%s&radius=500&key=%s' % (address, API_KEY)
   uri = 'https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=%s,%s&radius=50&key=%s' % (lat, lng, API_KEY)
   resp = json.loads(requests.get(uri).content)
