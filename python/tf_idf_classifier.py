@@ -4,14 +4,7 @@ import IPython as ipy
 import bisect
 from random import shuffle
 
-# TODO decide when to not classify
-# TODO translate ones in spanish
-# TODO add frequencies
-# TODO add wordnet for titles
-# TODO figure out a way to stop classifying dentists as manufacturing (frequencies will help?) 
-# Groves Auto Body (???)
-
-# fix 
+#FIXME
 """
 Traceback (most recent call last):
   File "tf_idf_classifier.py", line 29, in <module>
@@ -33,8 +26,6 @@ with open('../challenge_set.json') as data_file:
 with open('../naics_list.json') as data_file:
   naics = json.load(data_file)
 
-# Weigh title more than description
-# frequency weighting
 shuffle(businesses)
 for business in businesses:
   l = []

@@ -22,7 +22,8 @@ def classifyBusiness(business_uid, naics_code):
       with open('classified_set.csv', 'a') as classified_set:
         wr = csv.writer(classified_set)
         wr.writerow( ( business_uid, naics_code ) )
-      return redirect('/classify')
+      return redirecc
+      t('/classify')
     else:
         return abort(405)  # 405 Method Not Allowed
 

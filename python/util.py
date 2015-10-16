@@ -30,6 +30,12 @@ def cosine_sim(text1, text2):
   vectorizer = TfidfVectorizer(tokenizer=normalize, stop_words='english')
   tfidf = vectorizer.fit_transform([text1, text2])
   return ((tfidf * tfidf.T).A)[0,1]
+
+sentences = word2vec.Text8Corpus('text8')
+print "laoded text corpus"
+model = word2vec.Word2Vec(sentences, size=200)
+def word2vec_sim(text1, text2):
+  return model.n_similarity(clean_paragraph(text1), clean_paragraph(text2))
   
 def add_synonyms(words):
   """ Return list of synonyms of words in words """
