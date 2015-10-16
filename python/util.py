@@ -4,6 +4,8 @@ from nltk.tokenize import RegexpTokenizer
 from nltk.corpus import stopwords
 from nltk.stem import WordNetLemmatizer
 
+from gensim.models import word2vec
+
 import nltk, string
 from sklearn.feature_extraction.text import TfidfVectorizer
 
@@ -26,7 +28,7 @@ def cosine_sim(text1, text2):
   vectorizer = TfidfVectorizer(tokenizer=normalize, stop_words='english')
   tfidf = vectorizer.fit_transform([text1, text2])
   return ((tfidf * tfidf.T).A)[0,1]
-
+  
 def add_synonyms(words):
   """ Return list of synonyms of words in words """
   more_words = []
@@ -69,6 +71,8 @@ def get_tokenized_url_content(url):
   return clean_paragraph(raw)
 
 if __name__ == '__main__':
+  print word2vec_sim("cat", "cat is a dog")
+  ipy.embed()
   print add_synonyms(['dog'])
   print add_synonyms_to_text('dog')
   print clean_paragraph('Hi my name is John!!!!')
