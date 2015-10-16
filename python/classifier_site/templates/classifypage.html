@@ -12,6 +12,14 @@
     <div class="container-fluid">
       <div class="row">
         <div class="col-xs-4">
+          <h3>Bussiness</h3>
+        </div>
+        <div class="col-xs-8">
+          <h3>Most common code: {{common_code}}</h3>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-xs-4">
           <div class="table-responsive">
             <table class="table">
               <tbody>
@@ -64,21 +72,21 @@
             <div class="well well-sm">
               <div class="row">
                 <div class="col-xs-2">
-                  <form  method="post" action="/c/{{business['unique_id']}}/{{guess[0]['code']}}">
+                  <form  method="post" action="/c/{{business['unique_id']}}/{{guess[1]['code']}}">
                     <input type="submit" class="btn btn-success" />
                   </form>
                 </div>
                 <div class="col-xs-2">
-                  <b>Score: </b>{{guess[1]}}
+                  <b>Score: </b>{{guess[0]}}
                 </div>
                 <div class="col-xs-2">
-                  <b>Code: </b>{{guess[0]['code']}}
+                  <b>Code: </b>{{guess[1]['code']}}
                 </div>
                 <div class="col-xs-4">
-                  {{guess[0]['title']}}
+                  {{guess[1]['title']}}
                 </div>
                 <div class="col-xs-2">
-                  <button type="button" class="btn btn-default" data-toggle="popover" data-placement="bottom" data-container="body" data-content="{{guess[0]['description']}}">
+                  <button type="button" class="btn btn-default" data-toggle="popover" data-placement="bottom" data-container="body" data-content="{{guess[1]['description']}}">
                       Description
                   </button>
                 </div>

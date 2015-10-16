@@ -4,6 +4,6 @@
 
 .guesses {
   overflow: scroll;
-  max-height: 700px;
+  max-height: 600px;
 
 }
