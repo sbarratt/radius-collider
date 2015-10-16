@@ -15,7 +15,7 @@ import json
 
 class GoogleApi:
   def __init__(self):
-    self.api_key = 'AIzaSyAQOpIyo2L-6SpL3e5lylN-dnahV9MPC5I'
+    self.api_key = 'AIzaSyAQOpIyo2L-6SpL3e5lylN-dnahV9MPC5I' #we're kind of limited to 2,500 requests / day
 
   def decode_address(self, address):
     # Input: address (string)
@@ -73,6 +73,7 @@ def get_all_business_types():
           best_sim = sim
       if closest_place:
         types = filter(lambda x: not x in ['point_of_interest','establishment'], closest_place['types'])
+        types = map(lambda x: x.replace("_"," "), types)
         types = " ".join(types)
       else:
         types = None
