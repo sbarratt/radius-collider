@@ -1,7 +1,7 @@
 if __name__ == '__main__' and __package__ is None:
   from os import sys, path
   sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
-  from flask import Flask, render_template, redirect, request, abort
+  from flask import Flask, render_template, redirect, request, abort, url_for
   import json
   import csv
   import util
@@ -9,10 +9,15 @@ if __name__ == '__main__' and __package__ is None:
 
 app = Flask(__name__)
 
+@app.route("/")
+def root():
+  return redirect('/classify')
+
 @app.route("/classify")
 def classifypage():
   guesses = []
   current_business = unclassified_businesses.pop()
+  print current_business
   guesses = util.score_business(current_business, naics_items, ADD_SYNONYMS=True)
   code_list = bucket_guesses(guesses)
   return render_template('classifypage.html', business=current_business, guesses=guesses, code_list=code_list)
@@ -23,7 +28,7 @@ def classifyBusiness(business_uid, naics_code):
       with open('classified_set.csv', 'a') as classified_set:
         wr = csv.writer(classified_set)
         wr.writerow( ( business_uid, naics_code) )
-      return redirecc
+      return redirect('/classify')
       t('/classify')
     else:
         return abort(405)  # 405 Method Not Allowed
