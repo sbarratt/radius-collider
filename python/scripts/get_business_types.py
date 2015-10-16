@@ -8,34 +8,75 @@ import json
 import requests
 import csv
 import IPython as ipy
+from util import cosine_sim
 
-API_KEY = "AIzaSyDEVQJmING4SQSZbcap0YYV6Dt4dFt78tY"
+import requests
+import json
+
+class GoogleApi:
+  def __init__(self):
+    self.api_key = 'AIzaSyAQOpIyo2L-6SpL3e5lylN-dnahV9MPC5I'
+
+  def decode_address(self, address):
+    # Input: address (string)
+    # Output: lat, lon (int)
+    uri = 'https://maps.googleapis.com/maps/api/geocode/json?address=%s&key=%s' % (address, self.api_key)
+    resp = json.loads(requests.get(uri).content)
+    temp = resp['results'][0]['geometry']['location']
+    return temp['lat'], temp['lng']
+
+# if __name__ == '__main__':
+#   gapi = GoogleApi()
+#   print gapi.decode_address('2327 warring st')
+ 
+# API_KEY = "AIzaSyDEVQJmING4SQSZbcap0YYV6Dt4dFt78tY" #Myles 
+API_KEY = 'AIzaSyCdVPTYLYttmFGw7wVxNewCFV-DFSuUcBw' #Shane - don't use it too much it will charge my credit card
+
+gapi = GoogleApi()
 
 def url(code):
   return "http://api.naics.us/v0/q?year=2012&code={}".format(code)
 
 def get_place_id(address):
-  uri = 'https://maps.googleapis.com/maps/api/place/textsearch/json?query=%s&key=%s' % (address, API_KEY)
+  lat, lng = gapi.decode_address(address) #helps to base it off latitude and longitude then put in a radius
+  # uri = 'https://maps.googleapis.com/maps/api/place/textsearch/json?query=%s&radius=500&key=%s' % (address, API_KEY)
+  uri = 'https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=%s,%s&radius=50&key=%s' % (lat, lng, API_KEY)
   resp = json.loads(requests.get(uri).content)
-  return resp['results'][0]['place_id']
+  return resp['results'][0]['types']
 
-def get_place_type(address):
-  place_id = get_place_id(address)
-  uri = 'https://maps.googleapis.com/maps/api/place/details/json?placeid=%s&key=%s' % (place_id, API_KEY)
+def get_places(address):
+  lat, lng = gapi.decode_address(address) #helps to base it off latitude and longitude then put in a radius
+  # uri = 'https://maps.googleapis.com/maps/api/place/textsearch/json?query=%s&radius=500&key=%s' % (address, API_KEY)
+  uri = 'https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=%s,%s&radius=50&key=%s' % (lat, lng, API_KEY)
   resp = json.loads(requests.get(uri).content)
-  res = resp.get('result')
-  return res.get('types') if res else None
+  return resp['results']
+
+# UNNECCESSARY
+# def get_place_type(address):
+#   place_id = get_place_id(address)
+#   uri = 'https://maps.googleapis.com/maps/api/place/details/json?placeid=%s&key=%s' % (place_id, API_KEY)
+#   resp = json.loads(requests.get(uri).content)
+#   res = resp.get('result')
+#   return res.get('types') if res else None
 
 def get_all_business_types():
   with open('../../challenge_set.json') as data_file:
     businesses = json.load(data_file)
     for business in businesses:
       print business['name']
-      types = get_place_type(business['address'])
-      if types:
+      # types = get_place_type(business['address'])
+      closest_place, best_sim = None, 0
+      for place in get_places(business['address']):
+        sim = cosine_sim(place['name'], business['name'])
+        if sim > best_sim:
+          closest_place = place
+          best_sim = sim
+      if closest_place:
+        types = filter(lambda x: not x in ['point_of_interest','establishment'], closest_place['types'])
         types = " ".join(types)
       else:
         types = None
+      print types
       with open('../../businesses_types.csv', 'a') as businesses_types:
         wr = csv.writer(businesses_types)
         wr.writerow( ( business['unique_id'],  ) )

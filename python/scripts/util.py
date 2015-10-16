@@ -32,7 +32,6 @@ def cosine_sim(text1, text2):
   return ((tfidf * tfidf.T).A)[0,1]
 
 def word2vec_sim(text1, text2):
-  print "think about loading text corpus before..."
   sentences = word2vec.Text8Corpus('text8')
   print "laoded text corpus"
   model = word2vec.Word2Vec(sentences, size=200)
