@@ -68,5 +68,20 @@ def get_challengeset():
   """
   return json.load(open(DATA_DIR+'challenge_set.json','r'))
 
+def get_business_types():
+  """ Returns dict: unique_id --> type
+  If None: could not get a type
+
+  Response Format:
+  {
+  u'1fe9adec-46f3-48f8-9fdd-4b715115a091': restaurant,
+  u'1fee61a2-571d-4789-ac98-3d670bc9acb3': cafe,
+  u'1fee61a2-571d-4789-ac98-3d670bc9acb3': None,
+  ...
+  u'2002c9ca-45a5-49a1-921b-191b2760c89f': museum,
+  }
+  """
+  return pickle.load(open(DATA_DIR+'businesses_types.pickle','r'))
+
 if __name__ == '__main__':
   ipy.embed()

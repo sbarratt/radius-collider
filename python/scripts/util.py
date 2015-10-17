@@ -36,7 +36,7 @@ def word2vec_sim(text1, text2):
   print "laoded text corpus"
   model = word2vec.Word2Vec(sentences, size=200)
   return model.n_similarity(clean_paragraph(text1), clean_paragraph(text2))
-  
+
 def add_synonyms(words):
   """ Return list of synonyms of words in words """
   more_words = []
@@ -63,7 +63,7 @@ def clean_paragraph(text):
   stopset = set(stopwords.words('english'))
   wordnet_lemmatizer = WordNetLemmatizer()
 
-  text.decode('utf-8')
+  text.encode('utf-8', 'ignore')
   tokens = tokenizer.tokenize(text) #tokenize
   tokens = [w for w in tokens if not w in stopset] #remove stopwords
   x = []
@@ -74,7 +74,7 @@ def clean_paragraph(text):
   return x
 
 # def get_tokenized_url_content(url):
-#   html = urlopen(url).read().decode('utf8')
+#   html = urlopen(url).read().encode('utf8')
 #   raw = BeautifulSoup(html).get_text()
 #   return clean_paragraph(raw)
 

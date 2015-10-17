@@ -1,7 +1,16 @@
-import requests
-import json
-import pickle
-import IPython as ipy
+"""
+python/get_business_latlon.py
+
+Script to get businesses lat and lon and write to a pickle file
+"""
+
+if __name__ == '__main__' and __package__ is None:
+  from os import sys, path
+  sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
+  import loader
+  import requests
+  import json
+  import pickle
 
 class GoogleGeocodingApi:
   def __init__(self):
@@ -22,17 +31,16 @@ class GoogleGeocodingApi:
 
 def get_business_lat_lon():
   gapi = GoogleGeocodingApi()
-  id_to_loc = pickle.load(open('../../id_to_loc.pickle','r'))
-  with open('../../challenge_set.json') as data_file:
-    businesses = json.load(data_file)
-    for business in businesses:
-      unique_id = business['unique_id']
-      address = business['address']
-      if id_to_loc.get(unique_id) is None:
-        print business['name']
-        lat, lng = gapi.decode_address(address)
-        id_to_loc[unique_id] = (lat, lng)
-      pickle.dump(id_to_loc, open('../../id_to_loc.pickle','w'))
+  id_to_loc = loader.get_idtoloc()
+  businesses = loader.get_challengeset()
+  for business in businesses:
+    unique_id = business['unique_id']
+    address = business['address']
+    if id_to_loc.get(unique_id) is None:
+      print business['name']
+      lat, lng = gapi.decode_address(address)
+      id_to_loc[unique_id] = (lat, lng)
+    pickle.dump(id_to_loc, open('../../id_to_loc.pickle','w'))
 
 if __name__ == '__main__':
   get_business_lat_lon()

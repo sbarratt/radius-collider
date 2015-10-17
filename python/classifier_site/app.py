@@ -29,9 +29,8 @@ def classifyBusiness(business_uid, naics_code):
         wr = csv.writer(classified_set)
         wr.writerow( ( business_uid, naics_code) )
       return redirect('/classify')
-      t('/classify')
     else:
-        return abort(405)  # 405 Method Not Allowed
+      return abort(405)  # 405 Method Not Allowed
 
 def get_unclassified_businesses():
   businesses = loader.get_challengeset()
@@ -44,7 +43,6 @@ def get_unclassified_businesses():
 
 def get_classified_business_ids():
   classified_set = loader.get_classifiedset()
-  ids = []
   return classified_set.keys()
 
 def get_naics_data_for_level(code_length):
