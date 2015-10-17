@@ -1,0 +1,13 @@
+Flask==0.10.1
+Flask-Script==2.0.5
+Flask-SQLAlchemy==2.0
+gensim==0.12.2
+ipython==4.0.0
+ipython-genutils==0.1.0
+Jinja2==2.8
+nltk==3.0.5
+numpy==1.9.3
+pickleshare==0.5
+requests==2.8.1
+SQLAlchemy==1.0.8
+Werkzeug==0.10.4

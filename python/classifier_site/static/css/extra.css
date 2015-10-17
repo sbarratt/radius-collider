@@ -11,3 +11,13 @@
   overflow-y: scroll;
   max-height: 50vh;
 }
+
+.six-code-guesses, .three-code-buckets {
+  overflow-y: scroll;
+  height: 100px;
+}
+
+.database{
+  background: #F5F5F5;
+  font-size: 12px;
+}

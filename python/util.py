@@ -1,19 +1,14 @@
+from os import sys, path
+sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
 from nltk.corpus import wordnet as wn
 from nltk.corpus import wordnet
 from nltk.tokenize import RegexpTokenizer
 from nltk.corpus import stopwords
 from nltk.stem import WordNetLemmatizer
-
 from gensim.models import word2vec
-
 import nltk, string
 from sklearn.feature_extraction.text import TfidfVectorizer
-
-from urllib import urlopen
-# from bs4 import BeautifulSoup
-import json
 import bisect
-
 import IPython as ipy
 
 def stem_tokens(tokens):
@@ -32,8 +27,7 @@ def cosine_sim(text1, text2):
   return ((tfidf * tfidf.T).A)[0,1]
 
 def word2vec_sim(text1, text2):
-  print "think about loading text corpus before..."
-  sentences = word2vec.Text8Corpus('text8')
+  sentences = word2vec.Text8Corpus('data/text8')
   print "laoded text corpus"
   model = word2vec.Word2Vec(sentences, size=200)
   return model.n_similarity(clean_paragraph(text1), clean_paragraph(text2))
@@ -64,7 +58,7 @@ def clean_paragraph(text):
   stopset = set(stopwords.words('english'))
   wordnet_lemmatizer = WordNetLemmatizer()
 
-  text.encode('utf-16', 'ignore')
+  text.encode('utf-8', 'ignore')
   tokens = tokenizer.tokenize(text) #tokenize
   tokens = [w for w in tokens if not w in stopset] #remove stopwords
   x = []
@@ -73,12 +67,6 @@ def clean_paragraph(text):
       if len(word) > 1:
         x.append(wordnet_lemmatizer.lemmatize(word.lower())) #lemmatize and lower case
   return x
-
-# def get_tokenized_url_content(url):
-#   html = urlopen(url).read().decode('utf8')
-#   raw = BeautifulSoup(html).get_text()
-#   return clean_paragraph(raw)
-
 
 def score_business(business, naics, ADD_SYNONYMS=False):
   l = []
@@ -102,6 +90,16 @@ def score_business(business, naics, ADD_SYNONYMS=False):
     bisect.insort(l, (sim, naic))
   l = l[::-1]
   return l
+
+def bucket_guesses(guesses, threshold=0):
+  codes = {}
+  for score, naic in guesses:
+    if score > threshold:
+      key = str(naic['code'])[:3]
+      codes[key] = score + codes[key] if key in codes else score
+
+  code_list = sorted(codes.items(), key=lambda x: x[1], reverse=True)
+  return code_list
 
 if __name__ == '__main__':
   print word2vec_sim("cat", "cat is a dog")

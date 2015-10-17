@@ -53,7 +53,7 @@ def get_test_classifiedset():
       d[row[0]] = row[1]
   return d
 
-def get_real_classifiedset():
+def get_hand_classifiedset():
   """ Returns dictionary of classified NAICS that will be submitted
 
   Response Format:
@@ -64,7 +64,26 @@ def get_real_classifiedset():
   'fe389cac-3795-4b4c-9d09-39b77e166f5a': '444'
   }
   """
-  with open(DATA_DIR+'real_classified_set.csv', 'rb') as csvfile:
+  with open(DATA_DIR+'hand_classified_set.csv', 'rb') as csvfile:
+    spamreader = csv.reader(csvfile, delimiter=',')
+    d = {}
+    for row in spamreader:
+      d[row[0]] = row[1]
+  return d
+
+
+def get_algo_classifiedset():
+  """ Returns dictionary of classified NAICS that will be submitted
+
+  Response Format:
+  {
+  'c7103540-d25d-4f7f-9b4d-984eecf6ff7b': '54',
+  'df039e7a-a0b5-4700-9823-1119c771f59f': '51',
+  ...
+  'fe389cac-3795-4b4c-9d09-39b77e166f5a': '444'
+  }
+  """
+  with open(DATA_DIR+'algo_classified_set.csv', 'rb') as csvfile:
     spamreader = csv.reader(csvfile, delimiter=',')
     d = {}
     for row in spamreader:
@@ -103,6 +122,28 @@ def get_business_types():
     return pickle.load(open(DATA_DIR+'business_types.pickle','r'))
   except IOError:
     return {}
+
+def get_naics_data_for_level(code_length):
+  naics_data = get_naicslist()
+  results = []
+  for naics_item in naics_data:
+    if len(str(naics_item['code'])) == code_length:
+      results.append(naics_item)
+  return results
+
+def get_unclassified_businesses():
+  businesses = get_challengeset()
+  unclassified = []
+  ids = get_classified_business_ids()
+  for b in businesses:
+    if b['unique_id'] not in ids:
+      unclassified.append(b)
+  return unclassified
+
+def get_classified_business_ids():
+  test_classified_set = get_test_classifiedset()
+  hand_classified_set = get_hand_classifiedset()
+  return list(set(test_classified_set.keys()) | set(hand_classified_set.keys()))
 
 if __name__ == '__main__':
   ipy.embed()

@@ -1,0 +1,111 @@
+{% set MAX_SIX_CODE = 10 %}
+{% set MAX_THREE_CODE = 10 %}
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Radius Classifier</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/extra.css') }}">
+  </head>
+  <body class="database">
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-xs-12">
+          <div class="table-responsive">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>Hand Guess</th>
+                  <th>Algo Guess</th>
+                  <th>UID</th>
+                  <th>Name</th>
+                  <th>Type</th>
+                  <th>Description</th>
+                  <th>Six Code Guess</th>
+                  <th>Three Code Buckets</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for business in businesses.items %}
+                  {% with algo_code = algo_classified_set.get(business.unique_id) %}
+                  {% if hand_classified_set.get(business.unique_id) == algo_code and algo_code is not none %}
+                    <tr class="success">
+                  {% elif algo_code is none %}
+                    <tr class="warning">
+                  {% else %}
+                    <tr class="danger">
+                  {% endif %}
+                  {% endwith %}
+                  <td>{{ hand_classified_set.get(business.unique_id) }}</td>
+                  <td>{{ algo_classified_set.get(business.unique_id) }}</td>
+                  <td>{{business.unique_id}}</td>
+                  <td>{{business.name}}</td>
+                  <td>{{business.business_type}}</td>
+                  <td>{{business.description}}</td>
+                  <td>
+                    <div class="six-code-guesses ">
+                      <table class="table table-condensed">
+                          <tbody>
+                            {% for guess in business.six_code_guesses %}
+                            {%- if loop.index >= MAX_SIX_CODE %}{% break %}{% endif %}
+                            <tr>
+                              <td>{{guess[0]}}</td>
+                              <td>{{guess[1]['code']}}</td>
+                              <td>{{guess[1]['title']}}</td>
+                              <td>
+                                <span class="glyphicon glyphicon-info-sign" aria-hidden="true" data-toggle="popover" data-placement="bottom" data-container="body" data-content="{{guess[1]['description']}}"></span>
+                              </td>
+                            </tr>
+                            {% endfor %}
+                          </tbody>
+                        </table>
+                      </div>
+                  </td>
+                  <td>
+                    <div class="three-code-buckets">
+                      <table class="table table-condensed">
+                          <tbody>
+                            {% for bucket in business.three_code_buckets %}
+                            {%- if loop.index >= MAX_THREE_CODE %}{% break %}{% endif %}
+                            <tr>
+                              <td>{{bucket[0]}}</td>
+                              <td>{{bucket[1]}}</td>
+                            </tr>
+                            {% endfor %}
+                          </tbody>
+                        </table>
+                      </div>
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+          <!-- </div> -->
+        </div>
+      </div>
+      <nav>
+        <ul class="pager">
+          <li class="previous {% if not businesses.has_prev %}disabled{% endif %} ">
+            <a {% if businesses.has_prev %} href="{{ url_for('databaseView', page=businesses.prev_num) }}"{% endif %}><span aria-hidden="true">&larr;</span> Older</a>
+          </li>
+          <li class="next {% if not businesses.has_next %}disabled{% endif %}">
+            <a {% if businesses.has_next %} href="{{ url_for('databaseView', page=businesses.next_num) }} {% endif %}">Newer <span aria-hidden="true">&rarr;</span>
+          </a></li>
+        </ul>
+      </nav>
+    </div> <!-- /container -->
+  </body>
+    <script src="http://code.jquery.com/jquery-latest.min.js"></script>
+    <script src="{{ url_for('static', filename='extra/main.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
+    <script type="text/javascript">
+      $(function () {
+        $('[data-toggle="popover"]').popover()
+      })
+    </script>
+</html>
