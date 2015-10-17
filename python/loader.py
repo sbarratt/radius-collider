@@ -35,8 +35,8 @@ def get_naicslist():
   ipy.embed
   return json.load(open(DATA_DIR+'naics_list.json','r'))
 
-def get_classifiedset():
-  """ Returns dictionary of classified NAICS
+def get_test_classifiedset():
+  """ Returns dictionary of classified NAICS for testing
 
   Response Format:
   {
@@ -47,6 +47,24 @@ def get_classifiedset():
   }
   """
   with open(DATA_DIR+'classified_set.csv', 'rb') as csvfile:
+    spamreader = csv.reader(csvfile, delimiter=',')
+    d = {}
+    for row in spamreader:
+      d[row[0]] = row[1]
+  return d
+
+def get_real_classifiedset():
+  """ Returns dictionary of classified NAICS that will be submitted
+
+  Response Format:
+  {
+  'c7103540-d25d-4f7f-9b4d-984eecf6ff7b': '54',
+  'df039e7a-a0b5-4700-9823-1119c771f59f': '51',
+  ...
+  'fe389cac-3795-4b4c-9d09-39b77e166f5a': '444'
+  }
+  """
+  with open(DATA_DIR+'real_classified_set.csv', 'rb') as csvfile:
     spamreader = csv.reader(csvfile, delimiter=',')
     d = {}
     for row in spamreader:

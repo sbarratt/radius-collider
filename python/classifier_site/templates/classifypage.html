@@ -60,9 +60,16 @@
                   {% for code in code_list %}
                   <tr>
                     <td>
-                      <form  method="post" action="/c/{{business['unique_id']}}/{{code[0]}}">
+                      <form  method="post" action="/c/test/{{business['unique_id']}}/{{code[0]}}">
                         <button type="submit" class="btn btn-success">
                           <span class="glyphicon glyphicon-ok"></span>
+                        </button>
+                      </form>
+                    </td>
+                    <td>
+                      <form  method="post" action="/c/actual/{{business['unique_id']}}/{{code[0]}}">
+                        <button type="submit" class="btn btn-danger btn-xs">
+                          Actual
                         </button>
                       </form>
                     </td>
@@ -90,9 +97,16 @@
               {% for guess in guesses %}
               <tr>
                 <td>
-                  <form  method="post" action="/c/{{business['unique_id']}}/{{guess[1]['code']}}">
+                  <form  method="post" action="/c/test/{{business['unique_id']}}/{{guess[1]['code']}}">
                     <button type="submit" class="btn btn-success">
                       <span class="glyphicon glyphicon-ok"></span>
+                    </button>
+                  </form>
+                </td>
+                <td>
+                  <form  method="post" action="/c/actual/{{business['unique_id']}}/{{guess[1]['code']}}">
+                    <button type="submit" class="btn btn-danger btn-xs">
+                      Actual
                     </button>
                   </form>
                 </td>
