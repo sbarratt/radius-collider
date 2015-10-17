@@ -1,8 +1,7 @@
 if __name__ == '__main__' and __package__ is None:
   from os import sys, path
   sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
-  from flask import Flask, render_template, redirect, request, abort, url_for
-  import json
+  from flask import Flask, render_template, redirect, request, abort
   import csv
   import util
   import loader
@@ -17,10 +16,11 @@ def root():
 def classifypage():
   guesses = []
   current_business = unclassified_businesses.pop()
-  print current_business
   guesses = util.score_business(current_business, naics_items, ADD_SYNONYMS=True)
   code_list = bucket_guesses(guesses)
-  return render_template('classifypage.html', business=current_business, guesses=guesses, code_list=code_list)
+  business_type = business_types.get(current_business['unique_id'].encode())
+  return render_template('classifypage.html', business=current_business, guesses=guesses,
+      code_list=code_list, business_type=business_type)
 
 @app.route('/c/<business_uid>/<naics_code>', methods=['POST'])
 def classifyBusiness(business_uid, naics_code):
@@ -66,6 +66,7 @@ def bucket_guesses(guesses, threshold=0):
 if __name__ == "__main__":
   naics_items = get_naics_data_for_level(6)
   unclassified_businesses = get_unclassified_businesses()
+  business_types = loader.get_business_types()
   app.run(debug=True)
 
 
