@@ -81,7 +81,10 @@ def get_business_types():
   u'2002c9ca-45a5-49a1-921b-191b2760c89f': museum,
   }
   """
-  return pickle.load(open(DATA_DIR+'businesses_types.pickle','r'))
+  try:
+    return pickle.load(open(DATA_DIR+'business_types.pickle','r'))
+  except IOError:
+    return {}
 
 if __name__ == '__main__':
   ipy.embed()

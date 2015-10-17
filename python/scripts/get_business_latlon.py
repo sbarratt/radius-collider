@@ -40,7 +40,7 @@ def get_business_lat_lon():
       print business['name']
       lat, lng = gapi.decode_address(address)
       id_to_loc[unique_id] = (lat, lng)
-    pickle.dump(id_to_loc, open('../../id_to_loc.pickle','w'))
+    pickle.dump(id_to_loc, open('../../data/id_to_loc.pickle','w'))
 
 if __name__ == '__main__':
   get_business_lat_lon()
