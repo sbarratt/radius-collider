@@ -12,6 +12,9 @@ def getBusinessPage(page):
 def getBusinessWithId(id):
   return Business.query.filter_by(unique_id=str(id)).first()
 
+def businessExists(id):
+  return Business.query.filter_by(unique_id=str(id)).count() > 0
+
 def getFirstBusiness():
-  # return Business.query.first()
-  return Business.query.all()[9]
+  return Business.query.first()
+  # return Business.query.all()[9]

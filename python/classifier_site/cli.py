@@ -26,14 +26,20 @@ def dropdb():
 
 
 @manager.command
-def loadAllBusinesses():
-  businesses = loader.get_challengeset()
+@manager.option('-c', '--chunk', help='Chunk')
+def loadBusinesses(chunk):
+  assert chunk in [0, 1, 2], "Chunk must be 0, 1, or 2"
+  businesses = loader.get_challengeset(chunk)
   naics_items = loader.get_naics_data_for_level(6)
   business_types = loader.get_business_types()
-  i = 0
-  for b in businesses:
-    i += 1
-    print i, b['unique_id']
+  total = len(businesses)
+  print "Loading {} businesseses".format(total)
+  for i, b in enumerate(businesses):
+    sys.stdout.write('\r')
+    sys.stdout.write("[%-50s] %d%% (%d/%d) " % ('='*((i+1)*50/total), ((i+1)*100/total), i + 1, total))
+    sys.stdout.flush()
+    if dbh.businessesExists(b['unique_id']):
+      continue
     features_dict = TfidfScorer.get_features(b, naics_items, ADD_SYNONYMS=True)
     business_type = business_types.get(b['unique_id'].encode())
     dbh.addBusiness(b, business_type, features_dict)

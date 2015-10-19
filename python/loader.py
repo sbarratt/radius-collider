@@ -112,7 +112,7 @@ def get_algo_classifiedset():
 def reset_algo_classifiedset():
   open(DATA_DIR+'algo_classified_set.csv', 'w').close()
 
-def get_challengeset():
+def get_challengeset(chunk=None):
   """ Returns the list of businesses
 
   Response Format:
@@ -125,7 +125,15 @@ def get_challengeset():
   ...
   ]
   """
-  return json.load(open(DATA_DIR+'challenge_set.json','r'))
+  challenge_set = json.load(open(DATA_DIR+'challenge_set.json','r'))
+  if chunk == 0:
+    return challenge_set[:3333]
+  elif chunk == 1:
+    return challenge_set[3333:6666]
+  elif chunk == 2:
+    return challenge_set[6666:]
+  else:
+    return challenge_set
 
 def get_business_types():
   """ Returns dict: unique_id --> type
