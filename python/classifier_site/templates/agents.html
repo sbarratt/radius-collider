@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Radius Classifier</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/extra.css') }}">
+  </head>
+  <body>
+    <div class="container-fluid">
+      <h1 class="text-center">Who are you?</h1>
+      <br><br><br><br>
+      <div class="row">
+        <div class="col-xs-offset-4 col-xs-4">
+          <a type="button" href="/classifier/myles" class="btn btn-primary btn-lg btn-block">Myles
+            </a>
+        </div>
+      </div>
+      <br><br><br><br>
+      <div class="row">
+        <div class="col-xs-offset-4 col-xs-4">
+          <a type="button" href="/classifier/shane" class="btn btn-primary btn-lg btn-block">Shane
+            </a>
+        </div>
+      </div>
+      <br><br><br><br>
+      <div class="row">
+        <div class="col-xs-offset-4 col-xs-4">
+          <a type="button" href="/classifier/alex" class="btn btn-primary btn-lg btn-block">Alex
+            </a>
+        </div>
+      </div>
+
+    </div> <!-- /container -->
+  </body>
+  <script src="http://code.jquery.com/jquery-latest.min.js"></script>
+  <script src="{{ url_for('static', filename='extra/main.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
+  <script type="text/javascript">
+    $(function () {
+      $('[data-toggle="popover"]').popover()
+    })
+  </script>
+</html>

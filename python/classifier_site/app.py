@@ -19,20 +19,26 @@ app = create_app()
 
 @app.route("/")
 def root():
-  return redirect('/database')
+  return redirect('/agents')
+
+@app.route("/classifier")
+@app.route("/agents")
+def agentspage():
+  return render_template('agents.html')
 
 @app.route("/classifier/<agent>")
 def classifypage(agent):
+  print agent
+  if agent == 'myles':
+    next_id = unclassified_business_ids.pop(-1)
+  elif agent == 'alex':
+    next_id = unclassified_business_ids.pop()
+  elif agent == 'shane':
+    middle = len(unclassified_business_ids)//2
+    next_id = unclassified_business_ids.pop(middle)
+  else:
+    abort(405)
   # TODO uncomment after everything loaded to db
-  # if agent == 'myles':
-  #   next_id = unclassified_business_ids.pop(-1)
-  # elif agent == 'alex':
-  #   next_id = unclassified_business_ids.pop()
-  # elif agent == 'shane':
-  #   middle = len(unclassified_business_ids)//2
-  #   next_id = unclassified_business_ids.pop(middle)
-  # else:
-  #   abort(405)
   # business = dbh.getBusinessWithId(next_id)
   business = dbh.getFirstBusiness()
   return render_template('classifypage.html', business=business, naics_dict=naics_dict, agent=agent)
