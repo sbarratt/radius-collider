@@ -10,6 +10,7 @@ import requests
 import json
 import pickle
 from util import cosine_sim
+import IPython as ipy
 
 # API_KEY = "AIzaSyDEVQJmING4SQSZbcap0YYV6Dt4dFt78tY" #Myles
 # API_KEY = 'AIzaSyCdVPTYLYttmFGw7wVxNewCFV-DFSuUcBw' #Shane - don't use it too much it will charge my credit card
@@ -34,7 +35,8 @@ def get_all_business_types():
   print len(business_types_dict)
   for business in businesses:
     unique_id = business['unique_id']
-    if unique_id not in business_types_dict.keys():
+    # if unique_id not in business_types_dict.keys():
+    if business_types_dict.get(unique_id) is None:
       print business['name']
       closest_place, best_sim = None, 0
       lat, lon = idtoloc[unique_id]
@@ -44,7 +46,7 @@ def get_all_business_types():
           closest_place = place
           best_sim = sim
       if closest_place:
-        types = filter(lambda x: not x in ['point_of_interest','establishment'], closest_place['types'])
+        types = filter(lambda x: not x in ['point_of_interest','establishment','sublocality','route','real','political','of','or','local','locality','intersection','1'], closest_place['types'])
         types = " ".join(types).replace("_"," ")
       else:
         types = None
@@ -52,5 +54,20 @@ def get_all_business_types():
       business_types_dict[unique_id] = types
       loader.dump_business_dict(business_types_dict)
 
+def clean_business_types():
+  business_types_dict = loader.get_business_types()
+  for k in business_types_dict.keys():
+    strs = business_types_dict[k].split(' ')
+    s = []
+    for st in strs:
+      if st not in [None, 'health','point_of_interest','establishment','sublocality','route','real','political','of','or','local','locality','intersection','1']:
+        s += [st]
+    if len(s) == 0:
+      business_types_dict[k] = ''
+    else:
+      business_types_dict[k] = ' '.join(s)
+  loader.dump_business_dict(business_types_dict)
+
 if __name__ == '__main__':
   get_all_business_types()
+  # clean_business_types()
