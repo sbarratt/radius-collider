@@ -145,5 +145,15 @@ def get_classified_business_ids():
   hand_classified_set = get_hand_classifiedset()
   return list(set(test_classified_set.keys()) | set(hand_classified_set.keys()))
 
+def write_row_classified_set(business_uid, naics_code):
+  with open('../data/classified_set.csv', 'a') as classified_set:
+    wr = csv.writer(classified_set)
+    wr.writerow( ( business_uid, naics_code) )
+
+def write_row_hand_classified_set(business_uid, naics_code):
+  with open('../data/hand_classified_set.csv', 'a') as hand_classified_set_file:
+    wr = csv.writer(hand_classified_set_file)
+    wr.writerow( ( business_uid, naics_code) )
+
 if __name__ == '__main__':
   ipy.embed()

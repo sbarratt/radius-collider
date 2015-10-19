@@ -27,7 +27,7 @@ The logic used to classify the business is take the max 6 digit code with the fi
 ## Running the server
 ```bash
 cd radius-collider/python
-pip install requirements.txt
+sudo pip install -r ./requirements.txt
 python
 >>> nltk.download()
 >>> quit()
@@ -90,7 +90,7 @@ Methods:
 - classify 10000 by algo
 - comment code, and re-organize
 - put output format (as in loader.py) into README#Datasources
-- add text box at top to put in unlisted code
+- getting the same business twice in a row (IWD Marketing)
 - writeup
 - code cleanup
 - submission

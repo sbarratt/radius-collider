@@ -103,9 +103,7 @@ def bucket_guesses(guesses, threshold=0):
 
 if __name__ == '__main__':
   print word2vec_sim("cat", "cat is a dog")
-  ipy.embed()
   print add_synonyms(['dog'])
   print add_synonyms_to_text('dog')
   print clean_paragraph('Hi my name is John!!!!')
   print cosine_sim("cat", "cat is dog")
-  # print get_tokenized_url_content('http://www.shanebarratt.com')

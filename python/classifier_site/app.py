@@ -36,13 +36,9 @@ def classifypage():
 @app.route('/c/<test>/<business_uid>/<naics_code>', methods=['POST'])
 def classifyBusiness(test, business_uid, naics_code):
   if request.method == 'POST':
-    with open('data/classified_set.csv', 'a') as classified_set:
-      wr = csv.writer(classified_set)
-      wr.writerow( ( business_uid, naics_code) )
+    loader.write_row_classified_set(business_uid, naics_code)
     if test != 'test':
-      with open('data/hand_classified_set.csv', 'a') as hand_classified_set_file:
-        wr = csv.writer(hand_classified_set_file)
-        wr.writerow( ( business_uid, naics_code) )
+      loader.write_row_hand_classified_set(business_uid, naics_code)
     return redirect('/classifier')
   else:
     return abort(405)  # 405 Method Not Allowed

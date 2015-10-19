@@ -17,7 +17,7 @@ API_KEY = "AIzaSyDEVQJmING4SQSZbcap0YYV6Dt4dFt78tY" #Myles
 def url(code):
   return "http://api.naics.us/v0/q?year=2012&code={}".format(code)
 
-def get_places(lat,lng):
+def get_places(lat, lng):
   # uri = 'https://maps.googleapis.com/maps/api/place/textsearch/json?query=%s&radius=500&key=%s' % (address, API_KEY)
   uri = 'https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=%s,%s&radius=50&key=%s' % (lat, lng, API_KEY)
   resp = json.loads(requests.get(uri).content)
