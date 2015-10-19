@@ -1,7 +1,7 @@
 from os import sys, path
 sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
 from nltk.corpus import wordnet as wn
-from nltk.corpus import wordnet
+from nltk.corpus import wordnet, brown, reuters
 from nltk.tokenize import RegexpTokenizer
 from nltk.corpus import stopwords
 from nltk.stem import WordNetLemmatizer
@@ -65,6 +65,13 @@ def clean_paragraph(text):
       if len(word) > 1:
         x.append(wordnet_lemmatizer.lemmatize(word.lower())) #lemmatize and lower case
   return x
+
+def sample_weights(w=8, n=1000):
+  l = []
+  for i in range(n):
+    z = numpy.random.rand(w)
+    l.append(z/sum(z))
+  return l
 
 def bucket_guesses(guesses, threshold=0):
   codes = {}
