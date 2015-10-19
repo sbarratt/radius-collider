@@ -1,6 +1,7 @@
 import json, csv, pickle
 import IPython as ipy
 import os
+from gensim.models import word2vec
 
 DATA_DIR = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))+"/data/"
 
@@ -157,6 +158,9 @@ def get_unclassified_business_ids():
     if b['unique_id'] not in ids:
       unclassified_ids.append(b['unique_id'])
   return unclassified_ids
+
+def get_word2vecmodel():
+  return word2vec.Word2Vec.load("../data/word2vec_model")
 
 def get_classified_business_ids():
   test_classified_set = get_test_classifiedset()

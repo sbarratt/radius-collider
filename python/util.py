@@ -5,11 +5,11 @@ from nltk.corpus import wordnet
 from nltk.tokenize import RegexpTokenizer
 from nltk.corpus import stopwords
 from nltk.stem import WordNetLemmatizer
-from gensim.models import word2vec
 import nltk, string
 from sklearn.feature_extraction.text import TfidfVectorizer
 import bisect
 import IPython as ipy
+import numpy as np
 
 def stem_tokens(tokens):
   stemmer = nltk.stem.porter.PorterStemmer()
@@ -22,19 +22,13 @@ def normalize(text):
 
 def dotproduct(l1, l2):
   assert len(l1) == len(l2), "lists are different length"
-  return sum([l1[i]*l2[i] for i in range(len(l1))])
+  return float(np.array(l1).dot(np.array(l2)))
 
 def cosine_sim(text1, text2):
   """ Return the cosine similarity between text1 and text2 """
   vectorizer = TfidfVectorizer(tokenizer=normalize, stop_words='english')
   tfidf = vectorizer.fit_transform([text1, text2])
   return ((tfidf * tfidf.T).A)[0,1]
-
-def word2vec_sim(text1, text2):
-  sentences = word2vec.Text8Corpus('data/text8')
-  print "laoded text corpus"
-  model = word2vec.Word2Vec(sentences, size=200)
-  return model.n_similarity(clean_paragraph(text1), clean_paragraph(text2))
 
 def add_synonyms(words):
   """ Return list of synonyms of words in words """
