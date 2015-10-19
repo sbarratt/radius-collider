@@ -59,7 +59,7 @@ Methods:
 
 
 ## TODO
-- parrallize cli.py#loadAllBusinesses
+- parallelize cli.py#loadAllBusinesses
 - optimize scoring alogrithm
 - create logic to choose code from score
 - add all businesses to db
@@ -67,4 +67,8 @@ Methods:
 - classify 10000 by algo
 - comment code, and re-organize
 - put output format (as in loader.py) into README#Datasources
+- add text box at top to put in unlisted code
+- writeup
+- code cleanup
+- submission
 
