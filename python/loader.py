@@ -35,6 +35,24 @@ def get_naicslist():
   ipy.embed
   return json.load(open(DATA_DIR+'naics_list.json','r'))
 
+def get_naics_dict():
+  """ Returns dict of json naics code to objects
+
+  Response Format:
+  [
+  {
+    "code": 928120,
+    "description": "This industry comprises establishments of U.S. and foreign governments primarily engaged in international affairs and programs relating to other nations and peoples.",
+    "title": "International Affairs"
+  },
+  ...
+  ]
+  """
+  naics_dict = {}
+  for naics in get_naicslist():
+    naics_dict[naics['code']] = naics
+  return naics_dict
+
 def get_test_classifiedset():
   """ Returns dictionary of classified NAICS for testing
 
@@ -131,14 +149,14 @@ def get_naics_data_for_level(code_length):
       results.append(naics_item)
   return results
 
-def get_unclassified_businesses():
+def get_unclassified_business_ids():
   businesses = get_challengeset()
-  unclassified = []
+  unclassified_ids = []
   ids = get_classified_business_ids()
   for b in businesses:
     if b['unique_id'] not in ids:
-      unclassified.append(b)
-  return unclassified
+      unclassified_ids.append(b['unique_id'])
+  return unclassified_ids
 
 def get_classified_business_ids():
   test_classified_set = get_test_classifiedset()
@@ -146,12 +164,12 @@ def get_classified_business_ids():
   return list(set(test_classified_set.keys()) | set(hand_classified_set.keys()))
 
 def write_row_classified_set(business_uid, naics_code):
-  with open('../data/classified_set.csv', 'a') as classified_set:
+  with open(DATA_DIR+'classified_set.csv', 'a') as classified_set:
     wr = csv.writer(classified_set)
     wr.writerow( ( business_uid, naics_code) )
 
 def write_row_hand_classified_set(business_uid, naics_code):
-  with open('../data/hand_classified_set.csv', 'a') as hand_classified_set_file:
+  with open(DATA_DIR+'hand_classified_set.csv', 'a') as hand_classified_set_file:
     wr = csv.writer(hand_classified_set_file)
     wr.writerow( ( business_uid, naics_code) )
 

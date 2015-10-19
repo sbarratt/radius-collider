@@ -2,12 +2,12 @@ from os import sys, path
 sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
 from db import db
 import dbHelper as dbh
-import util
 import loader
 from flask.ext.script import Manager
 from models import Business
 from app import app
 import csv
+from scorers import TfidfScorer
 
 manager = Manager(app)
 
@@ -33,10 +33,9 @@ def loadAllBusinesses():
   for b in businesses:
     i += 1
     print i
-    guesses = util.score_business(b, naics_items, ADD_SYNONYMS=True)
-    code_list = util.bucket_guesses(guesses)
+    features_dict = scorer.get_features(b, naics_items, ADD_SYNONYMS=True)
     business_type = business_types.get(b['unique_id'].encode())
-    dbh.addBusiness(b, business_type, guesses, code_list)
+    dbh.addBusiness(b, business_type, features_dict)
 
 @manager.command
 def classifyBusinessWithAlgo():
@@ -46,7 +45,7 @@ def classifyBusinessWithAlgo():
     for b in businessPage.items:
       i += 1
       print i
-      classifyBusiness(b.unique_id, b.six_code_guesses[0][1]['code'])
+      classifyBusiness(b.unique_id, scorer.score_business(b)[0][1])
     if businessPage.has_next:
       businessPage = businessPage.next()
     else:
@@ -63,4 +62,5 @@ def restartDb():
   initdb()
 
 if __name__ == "__main__":
+  scorer = TfidfScorer()
   manager.run()

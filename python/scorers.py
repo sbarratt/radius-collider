@@ -1,24 +1,22 @@
-from nltk.corpus import wordnet as wn
-from nltk.corpus import wordnet
-from nltk.tokenize import RegexpTokenizer
-from nltk.corpus import stopwords
-from nltk.stem import WordNetLemmatizer
-from gensim.models import word2vec
-import nltk, string
-from sklearn.feature_extraction.text import TfidfVectorizer
 import bisect
 import IPython as ipy
 import util
 import loader
 
 
-class TfidfScorer:
-  def __init__(self, weights = [.2,.5,.1,.3]):
-    self.google_types = loader.get_business_types()
-    self.weights = weights
+WIEGHTS_DICT = {
+   'd_d_sim': .2,
+   't_t_sim': .5,
+   'd_t_sim': .1,
+   't_d_sim': .3
+}
 
-  def score_business(self, business, naics, ADD_SYNONYMS=False):
-    l = []
+class TfidfScorer:
+  def __init__(self, weights_dict = WIEGHTS_DICT):
+    self.google_types = loader.get_business_types()
+    self.weights_dict = weights_dict
+
+  def get_features(self, business, naics, ADD_SYNONYMS=False):
     business_desc = business['description']
     google_type = self.google_types.get(business['unique_id'])
     if google_type is not None:
@@ -30,6 +28,7 @@ class TfidfScorer:
       business_desc = util.add_synonyms_to_text(business_desc)
       business_name = util.add_synonyms_to_text(business_name)
 
+    codes_to_features = {}
     for naic in naics:
       naic_desc = naic['description']
       naic_title = naic['title']
@@ -41,7 +40,23 @@ class TfidfScorer:
       t_t_sim = util.cosine_sim(business['name'], naic['title'])
       d_t_sim = util.cosine_sim(business_desc, naic_title)
       t_d_sim = util.cosine_sim(business_name, naic_desc)
-      sim = util.dotproduct(self.weights, [d_d_sim, t_t_sim, d_t_sim, t_d_sim])
-      bisect.insort(l, (sim, naic))
+      features = {
+         'd_d_sim': d_d_sim,
+         't_t_sim': t_t_sim,
+         'd_t_sim': d_t_sim,
+         't_d_sim': t_d_sim
+      }
+      codes_to_features[naic['code']] = features
+    return codes_to_features
+
+  def score_business(self, business_from_db):
+    l = []
+    for naics_code, features in business_from_db.getFeatureDict().iteritems():
+      sim = 0
+      sim += self.weights_dict['d_d_sim']*features['d_d_sim']
+      sim += self.weights_dict['t_t_sim']*features['t_t_sim']
+      sim += self.weights_dict['d_t_sim']*features['d_t_sim']
+      sim += self.weights_dict['t_d_sim']*features['t_d_sim']
+      bisect.insort(l, (sim, naics_code))
     l = l[::-1]
     return l

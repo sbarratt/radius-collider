@@ -19,29 +19,27 @@
                   <tbody>
                     <tr>
                       <th scope="row">Name</th>
-                      <td>{{business['name']}}</td>
+                      <td>{{business.name}}</td>
                     </tr>
                     <tr>
                       <th scope="row">Type</th>
-                      <td>{{business_type}}</td>
+                      <td>{{business.business_type}}</td>
                     </tr>
                     <tr>
                       <th scope="row">Description</th>
-                      <td>{{business['description']}}</td>
+                      <td>{{business.description}}</td>
                     </tr>
                     <tr>
                       <th scope="row">id</th>
-                      <td>{{business['unique_id']}}</td>
+                      <td>{{business.unique_id}}</td>
                     </tr>
-                    {% for website in business['website'] %}
                     <tr>
                       <th scope="row">Website</th>
-                      <td><a href="{{website}}">{{website}}</a></td>
+                      <td><a href="{{business.website}}">{{business.website}}</a></td>
                     </tr>
-                    {% endfor %}
                     <tr>
                       <th scope="row">Address</th>
-                      <td>{{business['address']}}</td>
+                      <td>{{business.address}}</td>
                     </tr>
                   </tbody>
                 </table>
@@ -57,17 +55,17 @@
                   </tr>
                 </thead>
                 <tbody>
-                  {% for code in code_list %}
+                  {% for code in business.getThreeCodeBuckets() %}
                   <tr>
                     <td>
-                      <form  method="post" action="/c/test/{{business['unique_id']}}/{{code[0]}}">
+                      <form  method="post" action="/c/test/{{business.unique_id}}/{{code[0]}}">
                         <button type="submit" class="btn btn-success">
                           <span class="glyphicon glyphicon-ok"></span>
                         </button>
                       </form>
                     </td>
                     <td>
-                      <form  method="post" action="/c/actual/{{business['unique_id']}}/{{code[0]}}">
+                      <form  method="post" action="/c/actual/{{business.unique_id}}/{{code[0]}}">
                         <button type="submit" class="btn btn-danger btn-xs">
                           Actual
                         </button>
@@ -94,27 +92,27 @@
               </tr>
             </thead>
             <tbody>
-              {% for guess in guesses %}
+              {% for guess in business.getSixCodeGuesses() %}
               <tr>
                 <td>
-                  <form  method="post" action="/c/test/{{business['unique_id']}}/{{guess[1]['code']}}">
+                  <form  method="post" action="/c/test/{{business.unique_id}}/{{guess[1]}}">
                     <button type="submit" class="btn btn-success">
                       <span class="glyphicon glyphicon-ok"></span>
                     </button>
                   </form>
                 </td>
                 <td>
-                  <form  method="post" action="/c/actual/{{business['unique_id']}}/{{guess[1]['code']}}">
+                  <form  method="post" action="/c/actual/{{business.unique_id}}/{{guess[1]}}">
                     <button type="submit" class="btn btn-danger btn-xs">
                       Actual
                     </button>
                   </form>
                 </td>
                 <td>{{guess[0]}}</td>
-                <td>{{guess[1]['code']}}</td>
-                <td>{{guess[1]['title']}}</td>
+                <td>{{guess[1]}}</td>
+                <td>{{naics_dict[guess[1]]['title']}}</td>
                 <td>
-                  <button type="button" class="btn btn-info" data-toggle="popover" data-placement="bottom" data-container="body" data-content="{{guess[1]['description']}}">
+                  <button type="button" class="btn btn-info" data-toggle="popover" data-placement="bottom" data-container="body" data-content="{{naics_dict[guess[1]]['description']}}">
                       Description
                   </button>
                 </td>

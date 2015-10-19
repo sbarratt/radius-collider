@@ -50,14 +50,14 @@
                     <div class="six-code-guesses ">
                       <table class="table table-condensed">
                           <tbody>
-                            {% for guess in business.six_code_guesses %}
+                            {% for guess in business.getSixCodeGuesses() %}
                             {%- if loop.index >= MAX_SIX_CODE %}{% break %}{% endif %}
                             <tr>
                               <td>{{guess[0]}}</td>
-                              <td>{{guess[1]['code']}}</td>
-                              <td>{{guess[1]['title']}}</td>
+                              <td>{{guess[1]}}</td>
+                              <td>{{naics_dict[guess[1]]['title']}}</td>
                               <td>
-                                <span class="glyphicon glyphicon-info-sign" aria-hidden="true" data-toggle="popover" data-placement="bottom" data-container="body" data-content="{{guess[1]['description']}}"></span>
+                                <span class="glyphicon glyphicon-info-sign" aria-hidden="true" data-toggle="popover" data-placement="bottom" data-container="body" data-content="{{naics_dict[guess[1]]['description']}}"></span>
                               </td>
                             </tr>
                             {% endfor %}
@@ -69,7 +69,7 @@
                     <div class="three-code-buckets">
                       <table class="table table-condensed">
                           <tbody>
-                            {% for bucket in business.three_code_buckets %}
+                            {% for bucket in business.getThreeCodeBuckets() %}
                             {%- if loop.index >= MAX_THREE_CODE %}{% break %}{% endif %}
                             <tr>
                               <td>{{bucket[0]}}</td>

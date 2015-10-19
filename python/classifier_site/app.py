@@ -3,8 +3,6 @@ sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
 from flask import Flask, render_template, redirect, request, abort
 from db import db
 import dbHelper as dbh
-import csv
-import util
 import loader
 import scorers
 
@@ -25,14 +23,10 @@ def root():
 
 @app.route("/classifier")
 def classifypage():
-  guesses = []
-  current_business = unclassified_businesses.pop()
-  guesses = scorer.score_business(current_business, naics_items, ADD_SYNONYMS = True)
-  code_list = util.bucket_guesses(guesses)
-  business_type = business_types.get(current_business['unique_id'].encode())
-  dbh.addBusiness(current_business, business_type, guesses, code_list)
-  return render_template('classifypage.html', business=current_business, guesses=guesses,
-      code_list=code_list, business_type=business_type)
+  # TODO uncomment after everything loaded to db
+  # business = dbh.getBusinessWithId(unclassified_business_ids.pop())
+  business = dbh.getFirstBusiness()
+  return render_template('classifypage.html', business=business, naics_dict=naics_dict)
 
 @app.route('/c/<test>/<business_uid>/<naics_code>', methods=['POST'])
 def classifyBusiness(test, business_uid, naics_code):
@@ -49,13 +43,14 @@ def classifyBusiness(test, business_uid, naics_code):
 def databaseView(page=1):
   businesses = dbh.getBusinessPage(page)
   return render_template('database.html', businesses=businesses,
-      hand_classified_set=hand_classified_set, algo_classified_set=algo_classified_set)
+      hand_classified_set=hand_classified_set, algo_classified_set=algo_classified_set, naics_dict=naics_dict)
 
 if __name__ == "__main__":
   naics_items = loader.get_naics_data_for_level(6)
   hand_classified_set = loader.get_hand_classifiedset()
   algo_classified_set = loader.get_algo_classifiedset()
-  unclassified_businesses = loader.get_unclassified_businesses()
+  unclassified_business_ids = loader.get_unclassified_business_ids()
   business_types = loader.get_business_types()
-  scorer = scorers.TfidfScorer() 
+  naics_dict = loader.get_naics_dict()
+  scorer = scorers.TfidfScorer()
   app.run(debug=True)

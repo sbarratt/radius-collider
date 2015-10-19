@@ -74,9 +74,9 @@ def clean_paragraph(text):
 
 def bucket_guesses(guesses, threshold=0):
   codes = {}
-  for score, naic in guesses:
+  for score, naic_code in guesses:
     if score > threshold:
-      key = str(naic['code'])[:3]
+      key = str(naic_code)[:3]
       codes[key] = score + codes[key] if key in codes else score
 
   code_list = sorted(codes.items(), key=lambda x: x[1], reverse=True)
