@@ -15,6 +15,7 @@ from util import cosine_sim
 # API_KEY = 'AIzaSyCdVPTYLYttmFGw7wVxNewCFV-DFSuUcBw' #Shane - don't use it too much it will charge my credit card
 API_KEY = "AIzaSyAKVlnW6xrtTdHtwnE1R2x-2ewJQb-ACCM" #Shane
 # API_KEY = "AIzaSyC43m3xgSQtkbFzQ5Oa8XMH3Gq49RCR3oU" #Alex
+# API_KEY = "AIzaSyBYInlQYDWmJ3dGF7jGhl6_ArKcXHbdiyU" #Alex2
 
 def url(code):
   return "http://api.naics.us/v0/q?year=2012&code={}".format(code)
