@@ -70,7 +70,18 @@ def sample_weights(w=8, n=1000):
   l = []
   for i in range(n):
     z = numpy.random.rand(w)
-    l.append(z/sum(z))
+    z = z/sum(z)
+    features = {
+         'd_d_sim': z[0],
+         't_t_sim': z[1],
+         'd_t_sim': z[2],
+         't_d_sim': z[3],
+         'd_d_w2v': x[4],
+         't_t_w2v': x[5],
+         'd_t_w2v': x[6],
+         't_d_w2v': x[7],
+      }
+    l.append(features)
   return l
 
 def bucket_guesses(guesses, threshold=0):
