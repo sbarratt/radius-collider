@@ -55,20 +55,5 @@ def get_all_business_types():
       business_types_dict[unique_id] = types
       loader.dump_business_dict(business_types_dict)
 
-def clean_business_types():
-  business_types_dict = loader.get_business_types()
-  for k in business_types_dict.keys():
-    strs = business_types_dict[k].split(' ')
-    s = []
-    for st in strs:
-      if st not in [None, 'health','point_of_interest','establishment','sublocality','route','real','political','of','or','local','locality','intersection','1']:
-        s += [st]
-    if len(s) == 0:
-      business_types_dict[k] = ''
-    else:
-      business_types_dict[k] = ' '.join(s)
-  loader.dump_business_dict(business_types_dict)
-
 if __name__ == '__main__':
   get_all_business_types()
-  # clean_business_types()
