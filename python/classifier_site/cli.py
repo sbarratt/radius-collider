@@ -9,6 +9,7 @@ from app import app
 from scorers import TfidfScorer
 import util
 import numpy as np
+from multiprocessing import Pool
 
 manager = Manager(app)
 
@@ -29,20 +30,30 @@ def dropdb():
 def loadBusinesses(chunk):
   assert chunk in ['0', '1', '2'], "Chunk must be 0, 1, or 2"
   businesses = loader.get_challengeset(int(chunk))
-  naics_items = loader.get_naics_data_for_level(6)
-  business_types = loader.get_business_types()
   total = len(businesses)
+
+  pool = Pool(processes=10)
+
   print "Loading {} businesseses".format(total)
-  for i, b in enumerate(businesses):
+  i = 0
+  for group in chunker(businesses, 10):
+    i += len(group)
     sys.stdout.write('\r')
     sys.stdout.write("[%-50s] %d%% (%d/%d) " % ('='*((i+1)*50/total), ((i+1)*100/total), i + 1, total))
     sys.stdout.flush()
-    if dbh.businessExists(b['unique_id']):
-      continue
-    features_dict = TfidfScorer.get_features(b, naics_items, ADD_SYNONYMS=True)
-    business_type = business_types.get(b['unique_id'].encode())
-    dbh.addBusiness(b, business_type, features_dict)
+    pool.map(concurrent_process, group)
 
+
+def concurrent_process(biz):
+  if dbh.businessExists(biz['unique_id']):
+    return
+  features_dict = TfidfScorer.get_features(biz, naics_items, ADD_SYNONYMS=True)
+  business_type = business_types.get(biz['unique_id'].encode())
+  dbh.addBusiness(biz, business_type, features_dict)
+
+
+def chunker(seq, size):
+    return (seq[pos:pos + size] for pos in xrange(0, len(seq), size))
 
 @manager.command
 def getOptimalWeights():
@@ -99,4 +110,6 @@ def restartDb():
   initdb()
 
 if __name__ == "__main__":
+  naics_items = loader.get_naics_data_for_level(6)
+  business_types = loader.get_business_types()
   manager.run()
