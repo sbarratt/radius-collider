@@ -37,7 +37,8 @@ class TfidfScorer:
   def get_features(business, naics, ADD_SYNONYMS=False):
     business_desc = business['description']
     google_type = TfidfScorer.google_types.get(business['unique_id'])
-    business_name = google_type if google_type else business['name']
+    business_name = google_type if google_type else ''
+    business_name += ' ' + business['name']
 
     if ADD_SYNONYMS:
       business_desc = util.add_synonyms_to_text(business_desc)

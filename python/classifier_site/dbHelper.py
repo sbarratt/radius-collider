@@ -13,4 +13,5 @@ def getBusinessWithId(id):
   return Business.query.filter_by(unique_id=str(id)).first()
 
 def getFirstBusiness():
-  return Business.query.first()
+  # return Business.query.first()
+  return Business.query.all()[9]
