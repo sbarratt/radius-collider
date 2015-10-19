@@ -79,7 +79,7 @@ def sample_weights(w=8, n=1000):
          'd_d_w2v': x[4],
          't_t_w2v': x[5],
          'd_t_w2v': x[6],
-         't_d_w2v': x[7],
+         't_d_w2v': x[7]
       }
     l.append(features)
   return l
