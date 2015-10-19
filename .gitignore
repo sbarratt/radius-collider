@@ -1,5 +1,6 @@
 #### joe made this: https://goel.io/joe
 
+# Ignore large data files (find them on GDrive)
 data/word2vec_model
 data/brown_model
 data/reuters_model
