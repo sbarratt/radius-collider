@@ -3,14 +3,12 @@ python/get_business_latlon.py
 
 Script to get businesses lat and lon and write to a pickle file
 """
-
-if __name__ == '__main__' and __package__ is None:
-  from os import sys, path
-  sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
-  import loader
-  import requests
-  import json
-  import pickle
+from os import sys, path
+sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
+import loader
+import requests
+import json
+import pickle
 
 class GoogleGeocodingApi:
   def __init__(self):
