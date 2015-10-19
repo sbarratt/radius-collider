@@ -9,7 +9,7 @@ from app import app
 from scorers import TfidfScorer
 import util
 import numpy as np
-from multiprocessing import Pool
+from multiprocessing import Pool, cpu_count
 
 manager = Manager(app)
 
@@ -32,11 +32,12 @@ def loadBusinesses(chunk):
   businesses = loader.get_challengeset(int(chunk))
   total = len(businesses)
 
-  pool = Pool(processes=10)
+  num_processes = cpu_count()
+  pool = Pool(processes=num_processes)
 
   print "Loading {} businesseses".format(total)
   i = 0
-  for group in chunker(businesses, 10):
+  for group in chunker(businesses, num_processes):
     i += len(group)
     sys.stdout.write('\r')
     sys.stdout.write("[%-50s] %d%% (%d/%d) " % ('='*((i+1)*50/total), ((i+1)*100/total), i + 1, total))
