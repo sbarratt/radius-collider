@@ -1,5 +1,9 @@
 #### joe made this: https://goel.io/joe
 
+data/word2vec_model
+data/brown_model
+data/reuters_model
+
 #####=== Python ===#####
 
 # Byte-compiled / optimized / DLL files
