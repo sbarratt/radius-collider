@@ -58,14 +58,14 @@
                   {% for code in business.getThreeCodeBuckets() %}
                   <tr>
                     <td>
-                      <form  method="post" action="/c/test/{{business.unique_id}}/{{code[0]}}">
+                      <form  method="post" action="/c/{{agent}}/test/{{business.unique_id}}/{{code[0]}}">
                         <button type="submit" class="btn btn-success">
                           <span class="glyphicon glyphicon-ok"></span>
                         </button>
                       </form>
                     </td>
                     <td>
-                      <form  method="post" action="/c/actual/{{business.unique_id}}/{{code[0]}}">
+                      <form  method="post" action="/c/{{agent}}/actual/{{business.unique_id}}/{{code[0]}}">
                         <button type="submit" class="btn btn-danger btn-xs">
                           Actual
                         </button>
@@ -95,14 +95,14 @@
               {% for guess in business.getSixCodeGuesses() %}
               <tr>
                 <td>
-                  <form  method="post" action="/c/test/{{business.unique_id}}/{{guess[1]}}">
+                  <form  method="post" action="/c/{{agent}}/test/{{business.unique_id}}/{{guess[1]}}">
                     <button type="submit" class="btn btn-success">
                       <span class="glyphicon glyphicon-ok"></span>
                     </button>
                   </form>
                 </td>
                 <td>
-                  <form  method="post" action="/c/actual/{{business.unique_id}}/{{guess[1]}}">
+                  <form  method="post" action="/c/{{agent}}/actual/{{business.unique_id}}/{{guess[1]}}">
                     <button type="submit" class="btn btn-danger btn-xs">
                       Actual
                     </button>

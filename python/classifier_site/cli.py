@@ -6,8 +6,9 @@ import loader
 from flask.ext.script import Manager
 from models import Business
 from app import app
-import csv
 from scorers import TfidfScorer
+import util
+import numpy as np
 
 manager = Manager(app)
 
@@ -33,28 +34,56 @@ def loadAllBusinesses():
   for b in businesses:
     i += 1
     print i
-    features_dict = scorer.get_features(b, naics_items, ADD_SYNONYMS=True)
+    features_dict = TfidfScorer.get_features(b, naics_items, ADD_SYNONYMS=True)
     business_type = business_types.get(b['unique_id'].encode())
     dbh.addBusiness(b, business_type, features_dict)
 
+
 @manager.command
-def classifyBusinessWithAlgo():
+def getOptimalWeights():
+  # TODO weights_grid
+  weights_grid = util.get_weights_grid()
+  scores = []
+  for weights in weights_grid:
+    scorer = TfidfScorer(weights)
+    loader.reset_algo_classifiedset()
+    classifyBusinessWithScorer(scorer)
+    preditionScore = predictionScoreOfTrainingSet()
+    scores.append(preditionScore)
+    print "\n\nScore", preditionScore
+    print "Weights", weights
+  print "\n\n--------------------------------------------"
+  print "Best Score", max(scores)
+  print "Best Weights", weights_grid[np.argmin(scores)]
+
+
+def classifyBusinessWithScorer(scorer):
   businessPage = Business.query.paginate(1, 10, True)
   i = 0
   while True:
     for b in businessPage.items:
       i += 1
       print i
-      classifyBusiness(b.unique_id, scorer.score_business(b)[0][1])
+      writeClassification(b.unique_id, scorer.score_business(b)[0][1])
     if businessPage.has_next:
       businessPage = businessPage.next()
     else:
       break
 
-def classifyBusiness(business_uid, naics_code):
-  with open('data/algo_classified_set.csv', 'a') as classified_set:
-    wr = csv.writer(classified_set)
-    wr.writerow( ( business_uid, naics_code) )
+def predictionScoreOfTrainingSet():
+  hand_classified_set = loader.get_hand_classified_set()
+  algo_classified_set = loader.get_algo_classified_set()
+  score = 0
+  for uid, actual in hand_classified_set:
+    guess = algo_classified_set[uid]
+    score += util.score_prediction(guess, actual)
+  total = len(hand_classified_set.keys())*6
+  print "Score: " + score
+  print "Total: " + total
+  print "%: " + score/float(total)
+
+def writeClassification(business_uid, naics_code):
+  loader.write_row_algo_classified_set(business_uid, naics_code)
 
 @manager.command
 def restartDb():
@@ -62,5 +91,4 @@ def restartDb():
   initdb()
 
 if __name__ == "__main__":
-  scorer = TfidfScorer()
   manager.run()

@@ -19,22 +19,31 @@ app = create_app()
 
 @app.route("/")
 def root():
-  return redirect('/classifier')
+  return redirect('/database')
 
-@app.route("/classifier")
-def classifypage():
+@app.route("/classifier/<agent>")
+def classifypage(agent):
   # TODO uncomment after everything loaded to db
-  # business = dbh.getBusinessWithId(unclassified_business_ids.pop())
+  # if agent == 'myles':
+  #   next_id = unclassified_business_ids.pop(-1)
+  # elif agent == 'alex':
+  #   next_id = unclassified_business_ids.pop()
+  # elif agent == 'shane':
+  #   middle = len(unclassified_business_ids)//2
+  #   next_id = unclassified_business_ids.pop(middle)
+  # else:
+  #   abort(405)
+  # business = dbh.getBusinessWithId(next_id)
   business = dbh.getFirstBusiness()
-  return render_template('classifypage.html', business=business, naics_dict=naics_dict)
+  return render_template('classifypage.html', business=business, naics_dict=naics_dict, agent=agent)
 
-@app.route('/c/<test>/<business_uid>/<naics_code>', methods=['POST'])
-def classifyBusiness(test, business_uid, naics_code):
+@app.route('/c/<agent>/<test>/<business_uid>/<naics_code>', methods=['POST'])
+def classifyBusiness(agent, test, business_uid, naics_code):
   if request.method == 'POST':
     loader.write_row_classified_set(business_uid, naics_code)
     if test != 'test':
       loader.write_row_hand_classified_set(business_uid, naics_code)
-    return redirect('/classifier')
+    return redirect('/classifier/'+agent)
   else:
     return abort(405)  # 405 Method Not Allowed
 
