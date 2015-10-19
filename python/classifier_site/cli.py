@@ -33,7 +33,7 @@ def loadAllBusinesses():
   i = 0
   for b in businesses:
     i += 1
-    print i
+    print b['unique_id']
     features_dict = TfidfScorer.get_features(b, naics_items, ADD_SYNONYMS=True)
     business_type = business_types.get(b['unique_id'].encode())
     dbh.addBusiness(b, business_type, features_dict)
