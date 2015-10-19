@@ -12,7 +12,8 @@ import pickle
 from util import cosine_sim
 
 # API_KEY = "AIzaSyDEVQJmING4SQSZbcap0YYV6Dt4dFt78tY" #Myles
-API_KEY = 'AIzaSyCdVPTYLYttmFGw7wVxNewCFV-DFSuUcBw' #Shane - don't use it too much it will charge my credit card
+# API_KEY = 'AIzaSyCdVPTYLYttmFGw7wVxNewCFV-DFSuUcBw' #Shane - don't use it too much it will charge my credit card
+API_KEY = "AIzaSyAKVlnW6xrtTdHtwnE1R2x-2ewJQb-ACCM" #Shane
 # API_KEY = "AIzaSyC43m3xgSQtkbFzQ5Oa8XMH3Gq49RCR3oU" #Alex
 
 def url(code):
