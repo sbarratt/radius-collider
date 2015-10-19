@@ -17,10 +17,10 @@ WIEGHTS_DICT = {
 }
 
 class TfidfScorer:
-  google_types = loader.get_business_types()
 
   def __init__(self, weights_dict = WIEGHTS_DICT):
     self.weights_dict = weights_dict
+    self.google_types = loader.get_business_types()
     self.model = loader.get_word2vecmodel()
 
   def word2vec_sim(self, text1, text2):
@@ -36,16 +36,8 @@ class TfidfScorer:
   @staticmethod
   def get_features(business, naics, ADD_SYNONYMS=False):
     business_desc = business['description']
-<<<<<<< HEAD
     google_type = self.google_types.get(business['unique_id'])
     business_name = google_type if google_type else business['name']
-=======
-    google_type = TfidfScorer.google_types.get(business['unique_id'])
-    if google_type is not None:
-      business_name = google_type
-    else:
-      business_name = ''
->>>>>>> a741d768b8966bd9e97a4fcb2d5dc13f3a425e7a
 
     if ADD_SYNONYMS:
       business_desc = util.add_synonyms_to_text(business_desc)
