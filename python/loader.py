@@ -162,6 +162,12 @@ def get_unclassified_business_ids():
 def get_word2vecmodel():
   return word2vec.Word2Vec.load("../data/word2vec_model")
 
+def get_word2vecmodel_brown():
+  return word2vec.Word2Vec.load("../data/word2vec_model_brown")
+
+def get_word2vecmodel_reuters():
+  return word2vec.Word2Vec.load("../data/word2vec_model_reuters")
+
 def get_classified_business_ids():
   test_classified_set = get_test_classifiedset()
   hand_classified_set = get_hand_classifiedset()
