@@ -160,13 +160,13 @@ def get_unclassified_business_ids():
   return unclassified_ids
 
 def get_word2vecmodel():
-  return word2vec.Word2Vec.load("../data/word2vec_model")
+  return word2vec.Word2Vec.load(DATA_DIR + "word2vec_model")
 
 def get_word2vecmodel_brown():
-  return word2vec.Word2Vec.load("../data/brown_model")
+  return word2vec.Word2Vec.load(DATA_DIR + "brown_model")
 
 def get_word2vecmodel_reuters():
-  return word2vec.Word2Vec.load("../data/reuters_model")
+  return word2vec.Word2Vec.load(DATA_DIR + "reuters_model")
 
 def get_classified_business_ids():
   test_classified_set = get_test_classifiedset()
