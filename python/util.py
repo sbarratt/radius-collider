@@ -1,13 +1,12 @@
 from os import sys, path
 sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
 from nltk.corpus import wordnet as wn
-from nltk.corpus import wordnet, brown, reuters
+from nltk.corpus import wordnet
 from nltk.tokenize import RegexpTokenizer
 from nltk.corpus import stopwords
 from nltk.stem import WordNetLemmatizer
 import nltk, string
 from sklearn.feature_extraction.text import TfidfVectorizer
-import bisect
 import IPython as ipy
 import numpy as np
 
@@ -69,17 +68,17 @@ def clean_paragraph(text):
 def sample_weights(w=8, n=1000):
   l = []
   for i in range(n):
-    z = numpy.random.rand(w)
+    z = np.random.rand(w)
     z = z/sum(z)
     features = {
          'd_d_sim': z[0],
          't_t_sim': z[1],
          'd_t_sim': z[2],
          't_d_sim': z[3],
-         'd_d_w2v': x[4],
-         't_t_w2v': x[5],
-         'd_t_w2v': x[6],
-         't_d_w2v': x[7]
+         'd_d_w2v': z[4],
+         't_t_w2v': z[5],
+         'd_t_w2v': z[6],
+         't_d_w2v': z[7]
       }
     l.append(features)
   return l
@@ -94,8 +93,22 @@ def bucket_guesses(guesses, threshold=0):
   code_list = sorted(codes.items(), key=lambda x: x[1], reverse=True)
   return code_list
 
+def score_prediction(guess, actual):
+  assert actual is not None, 'Need a ground truth score'
+  if guess == '' or guess is None:
+    return 0
+  if guess[:2] != actual[:2]:
+    return -2
+  sum = 0
+  for idx, c in enumerate(actual):
+    if c == guess[idx]:
+      sum += 1
+    else:
+      sum -= 1
+      break
+  return sum
+
 if __name__ == '__main__':
-  print word2vec_sim("cat", "cat is a dog")
   print add_synonyms(['dog'])
   print add_synonyms_to_text('dog')
   print clean_paragraph('Hi my name is John!!!!')

@@ -109,6 +109,9 @@ def get_algo_classifiedset():
       d[row[0]] = row[1]
   return d
 
+def reset_algo_classifiedset():
+  open(DATA_DIR+'algo_classified_set.csv', 'w').close()
+
 def get_challengeset():
   """ Returns the list of businesses
 
@@ -141,6 +144,9 @@ def get_business_types():
     return pickle.load(open(DATA_DIR+'business_types.pickle','r'))
   except IOError:
     return {}
+
+def dump_business_dict(b_dict):
+  pickle.dump(b_dict, open('data/business_types.pickle','w'))
 
 def get_naics_data_for_level(code_length):
   naics_data = get_naicslist()
@@ -181,6 +187,11 @@ def write_row_classified_set(business_uid, naics_code):
 def write_row_hand_classified_set(business_uid, naics_code):
   with open(DATA_DIR+'hand_classified_set.csv', 'a') as hand_classified_set_file:
     wr = csv.writer(hand_classified_set_file)
+    wr.writerow( ( business_uid, naics_code) )
+
+def write_row_algo_classified_set(business_uid, naics_code):
+  with open(DATA_DIR+'algo_classified_set.csv', 'a') as algo_classified_set:
+    wr = csv.writer(algo_classified_set)
     wr.writerow( ( business_uid, naics_code) )
 
 if __name__ == '__main__':

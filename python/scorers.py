@@ -12,13 +12,15 @@ WIEGHTS_DICT = {
 }
 
 class TfidfScorer:
+  google_types = loader.get_business_types()
+
   def __init__(self, weights_dict = WIEGHTS_DICT):
-    self.google_types = loader.get_business_types()
     self.weights_dict = weights_dict
 
-  def get_features(self, business, naics, ADD_SYNONYMS=False):
+  @staticmethod
+  def get_features(business, naics, ADD_SYNONYMS=False):
     business_desc = business['description']
-    google_type = self.google_types.get(business['unique_id'])
+    google_type = TfidfScorer.google_types.get(business['unique_id'])
     if google_type is not None:
       business_name = google_type
     else:
