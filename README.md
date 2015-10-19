@@ -52,7 +52,7 @@ python classifier_site/cli.py <METHOD>
 Methods: 
 - `initdb`: Initiliaze the Database
 - `dropdb`: Drop the Database
-- `resetDB`: Drop then initialize the Database
+- `restartDb`: Drop then initialize the Database
 - `loadAllBusinesses`: Loads all businesses along with their 6 code scores and 3 code buckets
 - `classifyBusinessWithAlgo`: Loops through Businesses in the Database and classifies the Business based on some logic
 

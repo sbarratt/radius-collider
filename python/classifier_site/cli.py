@@ -64,11 +64,14 @@ def getOptimalWeights():
 
 def classifyBusinessWithScorer(scorer):
   businessPage = Business.query.paginate(1, 10, True)
+  total = businessPage.total
   i = 0
   while True:
     for b in businessPage.items:
       i += 1
-      print i
+      sys.stdout.write('\r')
+      sys.stdout.write("[%-50s] %d%% (%d/%d) " % ('='*((i+1)*50/total), ((i+1)*100/total), i + 1, total))
+      sys.stdout.flush()
       writeClassification(b.unique_id, scorer.score_business(b)[0][1])
     if businessPage.has_next:
       businessPage = businessPage.next()
