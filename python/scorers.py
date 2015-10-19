@@ -13,11 +13,17 @@ WIEGHTS_DICT = {
    'd_d_w2vsim': .2,
    'd_t_w2vsim': .2,
    't_d_w2vsim': .2
+  #  't_t_w2v_reuters_sim': .1,
+  # 'd_d_w2v_reuters_sim': .1,
+  # 'd_t_w2v_reuters_sim': .1,
+  # 't_d_w2v_reuters_sim': .1
 }
 
 class TfidfScorer:
   google_types = loader.get_business_types()
   model = loader.get_word2vecmodel()
+  # reuters_model = loader.get_word2vecmodel_reuters()
+  print "Loaded Models"
 
   def __init__(self, weights_dict = WIEGHTS_DICT):
     self.weights_dict = weights_dict
@@ -26,12 +32,26 @@ class TfidfScorer:
   def word2vec_sim(text1, text2):
     w1 = filter(lambda x: x in TfidfScorer.model.vocab, util.clean_paragraph(text1))
     w2 = filter(lambda x: x in TfidfScorer.model.vocab, util.clean_paragraph(text2))
+    if not w1 or not w2:
+      return .1 #default value
+    return TfidfScorer.model.n_similarity(w1, w2)
+
+  @staticmethod
+  def word2vec_reuters_sim(text1, text2):
+    w1 = filter(lambda x: x in TfidfScorer.reuters_model.vocab, util.clean_paragraph(text1))
+    w2 = filter(lambda x: x in TfidfScorer.reuters_model.vocab, util.clean_paragraph(text2))
     if w1 is None:
       w1 = []
     if w2 is None:
       w2 = []
-    sim = TfidfScorer.model.n_similarity(w1, w2)
+    sim = TfidfScorer.reuters_model.n_similarity(w1, w2)
     return sim
+
+  @staticmethod
+  def removeNans(var):
+    if type(var) is not np.float64 or np.isnan(var):
+      var = 0.0
+    return float(var)
 
   @staticmethod
   def get_features(business, naics, ADD_SYNONYMS=False):
@@ -67,21 +87,19 @@ class TfidfScorer:
       d_t_w2vsim = TfidfScorer.word2vec_sim(business_desc, naic_title)
       t_d_w2vsim = TfidfScorer.word2vec_sim(business_name, naic_desc)
 
-      if type(t_t_w2vsim) is not np.float64 or np.isnan(t_t_w2vsim):
-        t_t_w2vsim = 0.0
-      t_t_w2vsim = float(t_t_w2vsim)
+      # t_t_w2v_reuters_sim = TfidfScorer.word2vec_reuters_sim(business_name, naic_title)
+      # d_d_w2v_reuters_sim = TfidfScorer.word2vec_reuters_sim(business_name, naic_title)
+      # d_t_w2v_reuters_sim = TfidfScorer.word2vec_reuters_sim(business_name, naic_title)
+      # t_d_w2v_reuters_sim = TfidfScorer.word2vec_reuters_sim(business_name, naic_title)
 
-      if type(d_d_w2vsim) is not np.float64 or np.isnan(d_d_w2vsim):
-        d_d_w2vsim = 0.0
-      d_d_w2vsim = float(d_d_w2vsim)
-
-      if type(d_t_w2vsim) is not np.float64 or np.isnan(d_t_w2vsim):
-        d_t_w2vsim = 0.0
-      d_t_w2vsim = float(d_t_w2vsim)
-
-      if type(t_d_w2vsim) is not np.float64 or np.isnan(t_d_w2vsim):
-        t_d_w2vsim = 0.0
-      t_d_w2vsim = float(t_d_w2vsim)
+      t_t_w2vsim = TfidfScorer.removeNans(t_t_w2vsim)
+      d_d_w2vsim = TfidfScorer.removeNans(d_d_w2vsim)
+      d_t_w2vsim = TfidfScorer.removeNans(d_t_w2vsim)
+      t_d_w2vsim = TfidfScorer.removeNans(t_d_w2vsim)
+      # t_t_w2v_reuters_sim = removeNans(t_t_w2v_reuters_sim)
+      # d_d_w2v_reuters_sim = removeNans(d_d_w2v_reuters_sim)
+      # d_t_w2v_reuters_sim = removeNans(d_t_w2v_reuters_sim)
+      # t_d_w2v_reuters_sim = removeNans(t_d_w2v_reuters_sim)
 
       features = {
           'd_d_sim': d_d_sim,
@@ -92,6 +110,10 @@ class TfidfScorer:
           'd_d_w2vsim': d_d_w2vsim,
           'd_t_w2vsim': d_t_w2vsim,
           't_d_w2vsim': t_d_w2vsim
+          # 't_t_w2v_reuters_sim': t_t_w2v_reuters_sim,
+          # 'd_d_w2v_reuters_sim': d_d_w2v_reuters_sim,
+          # 'd_t_w2v_reuters_sim': d_t_w2v_reuters_sim,
+          # 't_d_w2v_reuters_sim': t_d_w2v_reuters_sim
       }
       codes_to_features[naic['code']] = features
     return codes_to_features
