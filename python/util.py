@@ -20,6 +20,10 @@ def normalize(text):
   remove_punctuation_map = dict((ord(char), None) for char in string.punctuation)
   return stem_tokens(nltk.word_tokenize(text.lower().translate(remove_punctuation_map)))
 
+def dotproduct(l1, l2):
+  assert len(l1) == len(l2), "lists are different length"
+  return sum([l1[i]*l2[i] for i in range(len(l1))])
+
 def cosine_sim(text1, text2):
   """ Return the cosine similarity between text1 and text2 """
   vectorizer = TfidfVectorizer(tokenizer=normalize, stop_words='english')
@@ -67,29 +71,6 @@ def clean_paragraph(text):
       if len(word) > 1:
         x.append(wordnet_lemmatizer.lemmatize(word.lower())) #lemmatize and lower case
   return x
-
-def score_business(business, naics, ADD_SYNONYMS=False):
-  l = []
-  for naic in naics:
-    if ADD_SYNONYMS:
-      business_desc = add_synonyms_to_text(business['description'])
-      business_name = add_synonyms_to_text(business['name'])
-      naic_title = add_synonyms_to_text(naic['title'])
-      naic_desc = add_synonyms_to_text(naic['description'])
-    else:
-      business_desc = business['description']
-      business_name = business['name']
-      naic_desc = naic['description']
-      naic_title = naic['title']
-    d_d_sim = cosine_sim(business_desc, naic_desc)
-    t_t_sim = cosine_sim(business['name'], naic['title'])
-    d_t_sim = cosine_sim(business_desc, naic_title)
-    t_d_sim = cosine_sim(business_name, naic_desc)
-    sim = .3*t_t_sim+.4*d_t_sim+.1*t_d_sim+.1*d_d_sim
-    # sim = .4*t_t_sim+.2*d_t_sim+.1*t_d_sim+.1*d_d_sim
-    bisect.insort(l, (sim, naic))
-  l = l[::-1]
-  return l
 
 def bucket_guesses(guesses, threshold=0):
   codes = {}

@@ -6,6 +6,7 @@ import dbHelper as dbh
 import csv
 import util
 import loader
+import scorers
 
 def create_app():
   app = Flask(__name__)
@@ -26,7 +27,7 @@ def root():
 def classifypage():
   guesses = []
   current_business = unclassified_businesses.pop()
-  guesses = util.score_business(current_business, naics_items, ADD_SYNONYMS=True)
+  guesses = scorer.score_business(current_business, naics_items, ADD_SYNONYMS = True)
   code_list = util.bucket_guesses(guesses)
   business_type = business_types.get(current_business['unique_id'].encode())
   dbh.addBusiness(current_business, business_type, guesses, code_list)
@@ -56,4 +57,5 @@ if __name__ == "__main__":
   algo_classified_set = loader.get_algo_classifiedset()
   unclassified_businesses = loader.get_unclassified_businesses()
   business_types = loader.get_business_types()
+  scorer = scorers.TfidfScorer() 
   app.run(debug=True)
