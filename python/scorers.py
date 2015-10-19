@@ -2,7 +2,6 @@ import bisect
 import IPython as ipy
 import util
 import loader
-from gensim.models import word2vec
 import numpy as np
 
 WIEGHTS_DICT = {
@@ -17,26 +16,27 @@ WIEGHTS_DICT = {
 }
 
 class TfidfScorer:
+  google_types = loader.get_business_types()
+  model = loader.get_word2vecmodel()
 
   def __init__(self, weights_dict = WIEGHTS_DICT):
     self.weights_dict = weights_dict
-    self.google_types = loader.get_business_types()
-    self.model = loader.get_word2vecmodel()
 
-  def word2vec_sim(self, text1, text2):
-    w1 = filter(lambda x: x in self.model.vocab, util.clean_paragraph(text1))
-    w2 = filter(lambda x: x in self.model.vocab, util.clean_paragraph(text2))
+  @staticmethod
+  def word2vec_sim(text1, text2):
+    w1 = filter(lambda x: x in TfidfScorer.model.vocab, util.clean_paragraph(text1))
+    w2 = filter(lambda x: x in TfidfScorer.model.vocab, util.clean_paragraph(text2))
     if w1 is None:
       w1 = []
     if w2 is None:
       w2 = []
-    sim = self.model.n_similarity(w1, w2)
+    sim = TfidfScorer.model.n_similarity(w1, w2)
     return sim
 
   @staticmethod
   def get_features(business, naics, ADD_SYNONYMS=False):
     business_desc = business['description']
-    google_type = self.google_types.get(business['unique_id'])
+    google_type = TfidfScorer.google_types.get(business['unique_id'])
     business_name = google_type if google_type else business['name']
 
     if ADD_SYNONYMS:
@@ -61,10 +61,10 @@ class TfidfScorer:
       d_t_sim = util.cosine_sim(business_desc, naic_title)
       t_d_sim = util.cosine_sim(business_name, naic_desc)
 
-      t_t_w2vsim = self.word2vec_sim(business_name, naic_title)
-      d_d_w2vsim = self.word2vec_sim(business_desc, naic_desc)
-      d_t_w2vsim = self.word2vec_sim(business_desc, naic_title)
-      t_d_w2vsim = self.word2vec_sim(business_name, naic_desc)
+      t_t_w2vsim = TfidfScorer.word2vec_sim(business_name, naic_title)
+      d_d_w2vsim = TfidfScorer.word2vec_sim(business_desc, naic_desc)
+      d_t_w2vsim = TfidfScorer.word2vec_sim(business_desc, naic_title)
+      t_d_w2vsim = TfidfScorer.word2vec_sim(business_name, naic_desc)
 
       if type(t_t_w2vsim) is not np.float64 or np.isnan(t_t_w2vsim):
         t_t_w2vsim = 0.0
