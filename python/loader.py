@@ -154,7 +154,7 @@ def get_business_types():
     return {}
 
 def dump_business_dict(b_dict):
-  pickle.dump(b_dict, open('data/business_types.pickle','w'))
+  pickle.dump(b_dict, open(DATA_DIR + 'business_types.pickle','w'))
 
 def get_naics_data_for_level(code_length):
   naics_data = get_naicslist()
