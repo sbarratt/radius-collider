@@ -15,6 +15,14 @@ def getBusinessWithId(id):
 def businessExists(id):
   return Business.query.filter_by(unique_id=str(id)).count() > 0
 
+def getNextUnclassifiedBusiness(unclassified_set):
+  while True:
+    next_id = unclassified_set.pop()
+    if businessExists(next_id):
+      return getBusinessWithId(next_id)
+  return None
+
 def getFirstBusiness():
   return Business.query.first()
   # return Business.query.all()[9]
+
