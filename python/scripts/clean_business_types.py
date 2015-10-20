@@ -15,7 +15,7 @@ def clean_business_types():
     strs = business_types_dict[k].split(' ')
     s = []
     for st in strs:
-      if st not in [None, 'agency','point_of_interest','establishment','sublocality','route','real','political','of','or','local','locality','intersection','1']:
+      if st not in [None, 'agency', 'place', 'food', 'point_of_interest','establishment','sublocality','route','real','political','of','or','local','locality','intersection','1']:
         s += [st]
     if len(s) == 0:
       business_types_dict[k] = ''
