@@ -17,9 +17,9 @@ WIEGHTS_DICT = {
 
 class TfidfScorer:
   google_types = loader.get_business_types()
-  # model = loader.get_word2vecmodel()
-  # reuters_model = loader.get_word2vecmodel_reuters()
-  # print "Loaded Models"
+  model = loader.get_word2vecmodel()
+  reuters_model = loader.get_word2vecmodel_reuters()
+  print "Loaded Models"
 
   def __init__(self, weights_dict = WIEGHTS_DICT):
     self.weights_dict = weights_dict
@@ -59,6 +59,9 @@ class TfidfScorer:
     if ADD_SYNONYMS:
       business_desc = util.add_synonyms_to_text(business_desc)
       business_name = util.add_synonyms_to_text(business_name)
+    else:
+      business_desc = util.clean_paragraph(business_desc)
+      business_name = util.clean_paragraph(business_name)
 
     codes_to_features = {}
     for naic in naics:

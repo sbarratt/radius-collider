@@ -80,7 +80,7 @@ def getOptimalWeights():
 
 @manager.command
 def classifyBusinessWithScorer(scorer=TfidfScorer()):
-  businessPage = Business.query.paginate(1, 10, True)
+  businessPage = Business.query.paginate(1, 500, True)
   total = businessPage.total
   i = 0
   while True:
@@ -89,11 +89,50 @@ def classifyBusinessWithScorer(scorer=TfidfScorer()):
       sys.stdout.write('\r')
       sys.stdout.write("[%-50s] %d%% (%d/%d) " % ('='*((i+1)*50/total), ((i+1)*100/total), i, total))
       sys.stdout.flush()
-      writeClassification(b.unique_id, scorer.score_business(b)[0][1])
+      code = scoreLogic3(b, scorer.score_business(b))
+      writeClassification(b.unique_id, code)
     if businessPage.has_next:
       businessPage = businessPage.next()
     else:
       break
+
+def scoreLogic1(scores):
+  """
+  argmax
+  """
+  return scores[0][1]
+
+def scoreLogic2(scores, threshold=.7):
+  """
+  agrmax if score is above THRESHOLD, else nothing
+  """
+  if scores[0][0] > .7:
+    return scores[0][1]
+  else:
+    return ''
+
+def scoreLogic3(b, scores, threshold=.7):
+  """
+
+  """
+  import re
+  topMatch = naics_dict[scores[0][1]]
+  matches=re.findall(r'\(except(.+?)\)',topMatch['title'] + " " + topMatch['description'])
+  # matches is now ['String 1', 'String 2', 'String3']
+  matches = sum([m.strip().split() for m in matches], [])
+  black_list = ['of','the','in','for','at','and','or','as','on','real']
+  idx = 0
+  for m in matches:
+    if m in black_list:
+      continue
+    if m in b.name:
+      print m
+      idx = 1
+      break
+  if scores[idx][0] > .7:
+    return scores[idx][1]
+  else:
+    return ''
 
 @manager.command
 def classifyBusinessFast():
@@ -130,7 +169,7 @@ def classifyBusinessFast():
     for i,j in enumerate(['d_d_sim', 'd_d_w2vsim', 'd_t_sim', 'd_t_w2vsim', 't_d_sim', 't_d_w2vsim', 't_t_sim', 't_t_w2vsim']):
       w.append(WEIGHTS_DICT[j])
     S = [S[i]*w[i] for i in range(len(S))]
-    S = reduce(lambda x,y:x+y, S) 
+    S = reduce(lambda x,y:x+y, S)
     for i in range(10000):
       ide = index_to_id[np.argmax(S[i,:])]
       writeClassification(id_to_bizid[i], ide)
@@ -161,4 +200,5 @@ def restartDb():
 if __name__ == "__main__":
   naics_items = loader.get_naics_data_for_level(6)
   business_types = loader.get_business_types()
+  naics_dict = loader.get_naics_dict()
   manager.run()

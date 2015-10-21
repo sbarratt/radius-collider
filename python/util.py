@@ -7,8 +7,8 @@ from nltk.corpus import stopwords
 from nltk.stem import WordNetLemmatizer
 import nltk, string
 from sklearn.feature_extraction.text import TfidfVectorizer
-import IPython as ipy
 import numpy as np
+import re
 
 def stem_tokens(tokens):
   stemmer = nltk.stem.porter.PorterStemmer()
@@ -50,6 +50,7 @@ def add_synonyms_to_text(text):
 
 def clean_paragraph(text):
   """ Cleans and Tokenizes text (str) """
+  text = re.sub(r'\(except(.+?)\)', '', text) # removes (except ...)
 
   tokenizer = RegexpTokenizer(r'\w+')
   stopset = set(stopwords.words('english'))
@@ -109,6 +110,28 @@ def score_prediction(guess, actual):
       sum -= 1
       break
   return sum
+
+def get_score_color(guess, actual):
+  if actual == None:
+    return '#DDDDDD'
+  score = score_prediction(guess, actual)
+  if score == 6:
+    return '#004b31'
+  elif score == 5:
+    return '#006442'
+  elif score == 4:
+    return '#007e53'
+  elif score == 3:
+    return '#009764'
+  elif score == 2:
+    return '#00b174'
+  elif score == 1:
+    return '#00e495'
+  elif score == 0:
+    return '#ffe34c'
+  elif score == -2:
+    return '#b1003d'
+
 
 if __name__ == '__main__':
   print add_synonyms(['dog'])

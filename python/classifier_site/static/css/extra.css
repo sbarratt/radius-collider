@@ -12,7 +12,7 @@
   max-height: 50vh;
 }
 
-.six-code-guesses, .three-code-buckets {
+.six-code-guesses, .three-code-buckets, .description {
   overflow-y: scroll;
   height: 100px;
 }
@@ -20,4 +20,11 @@
 .database{
   background: #F5F5F5;
   font-size: 12px;
+}
+
+.score {
+  width: 100px;
+  height: 100px;
+  color: white;
+  text-align: center;
 }

@@ -19,6 +19,7 @@
             <table class="table">
               <thead>
                 <tr>
+                  <th>Score</th>
                   <th>Hand Guess</th>
                   <th>Algo Guess</th>
                   <th>UID</th>
@@ -31,21 +32,24 @@
               </thead>
               <tbody>
                 {% for business in businesses.items %}
+                <tr>
                   {% with algo_code = algo_classified_set.get(business.unique_id) %}
-                  {% if hand_classified_set.get(business.unique_id) is none %}
-                    <tr>
-                  {% elif hand_classified_set.get(business.unique_id) != algo_code %}
-                    <tr class="danger">
-                  {% elif hand_classified_set.get(business.unique_id) == algo_code %}
-                    <tr class="success">
-                  {% endif %}
+                  <td class="score" style="background-color: {{get_score_color(algo_code , hand_classified_set.get(business.unique_id))}}">
+                    {% if hand_classified_set.get(business.unique_id) is not none %}
+                    <h1>{{ score_prediction(algo_classified_set.get(business.unique_id), hand_classified_set.get(business.unique_id)) }}</h1>
+                    {% endif %}
+                  </td>
                   {% endwith %}
                   <td>{{ hand_classified_set.get(business.unique_id) }}</td>
                   <td>{{ algo_classified_set.get(business.unique_id) }}</td>
                   <td>{{business.unique_id}}</td>
                   <td>{{business.name}}</td>
                   <td>{{business.business_type}}</td>
-                  <td>{{business.description}}</td>
+                  <td>
+                    <div class="description">
+                      {{business.description}}
+                    </div>
+                  </td>
                   <td>
                     <div class="six-code-guesses ">
                       <table class="table table-condensed">

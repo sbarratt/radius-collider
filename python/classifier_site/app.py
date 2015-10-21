@@ -5,11 +5,14 @@ from db import db
 import dbHelper as dbh
 import loader
 import scorers
+import util
 
 def create_app():
   app = Flask(__name__)
   app.config.from_object('config')
   app.jinja_env.add_extension('jinja2.ext.loopcontrols')
+  app.jinja_env.globals.update(get_score_color=util.get_score_color)
+  app.jinja_env.globals.update(score_prediction=util.score_prediction)
   db.init_app(app)
   with app.app_context():
     db.create_all()
