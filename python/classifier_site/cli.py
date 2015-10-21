@@ -10,6 +10,7 @@ from scorers import TfidfScorer
 import util
 import numpy as np
 from multiprocessing import Pool, cpu_count
+import IPython as ipy
 
 manager = Manager(app)
 
@@ -25,6 +26,9 @@ def dropdb():
   db.drop_all()
   print('Dropped the database.')
 
+@manager.command
+def getAllBusinesses():
+  ipy.embed()
 
 @manager.option('-c', '--chunk', dest='chunk', help='Specify a chunk [0, 1, 2]', required=True)
 def loadBusinesses(chunk):

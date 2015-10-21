@@ -9,6 +9,9 @@ def addBusiness(business, business_type, features_dict):
 def getBusinessPage(page):
   return Business.query.paginate(page, 20, True)
 
+def getAllBusinesses():
+  return Business.query.all()
+
 def getBusinessWithId(id):
   return Business.query.filter_by(unique_id=str(id)).first()
 

@@ -4,6 +4,15 @@
 data/word2vec_model
 data/brown_model
 data/reuters_model
+data/classification/s0.npy
+data/classification/s1.npy
+data/classification/s2.npy
+data/classification/s3.npy
+data/classification/s4.npy
+data/classification/s5.npy
+data/classification/s6.npy
+data/classification/s7.npy
+data/classification/S.pickle
 
 #####=== Python ===#####
 

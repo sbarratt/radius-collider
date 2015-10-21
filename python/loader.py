@@ -1,4 +1,5 @@
 import json, csv, pickle
+import numpy as np
 import IPython as ipy
 import os
 from gensim.models import word2vec
@@ -201,6 +202,18 @@ def write_row_algo_classified_set(business_uid, naics_code):
   with open(DATA_DIR+'algo_classified_set.csv', 'a') as algo_classified_set:
     wr = csv.writer(algo_classified_set)
     wr.writerow( ( business_uid, naics_code) )
+
+def get_id_to_index():
+  return pickle.load(open(DATA_DIR+"classification/id_to_index.pickle","r"))
+
+def get_index_to_id():
+  return pickle.load(open(DATA_DIR+"classification/index_to_id.pickle","r"))
+
+def get_S():
+  S = []
+  for i in range(8):
+    S.append(np.load(DATA_DIR+"classification/s"+str(i)+".npy"))
+  return S
 
 if __name__ == '__main__':
   ipy.embed()
