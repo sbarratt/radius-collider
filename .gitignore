@@ -75,3 +75,5 @@ target/
 
 *.DS_Store
 app.db
+
+algo_classified_set.csv
