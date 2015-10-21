@@ -40,8 +40,7 @@ def agentspage():
 
 @app.route("/classifier/<agent>")
 def classifypage(agent):
-    business = dbh.getNextUnclassifiedBusiness(
-        unclassified_business_ids, agent)
+    business = dbh.getNextUnclassifiedBusiness(unclassified_business_ids, agent)
     if business == None:
         abort(410)
     return render_template('classifypage.html', business=business, naics_dict=naics_dict, agent=agent)
