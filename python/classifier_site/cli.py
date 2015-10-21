@@ -13,6 +13,7 @@ import numpy as np
 from multiprocessing import Pool, cpu_count
 import IPython as ipy
 from sqlalchemy import or_
+from collections import OrderedDict
 import random
 import re
 
@@ -65,8 +66,7 @@ def loadBusinesses(chunk, num_processes=cpu_count()):
     for group in chunker(businesses, num_processes):
         i += len(group)
         sys.stdout.write('\r')
-        sys.stdout.write("[%-50s] %d%% (%d/%d) " % ('=' * ((i + 1)
-                                                           * 50 / total), ((i + 1) * 100 / total), i + 1, total))
+        sys.stdout.write("[%-50s] %d%% (%d/%d) " % ('=' * ((i + 1) * 50 / total), ((i + 1) * 100 / total), i + 1, total))
         sys.stdout.flush()
         pool.map(concurrent_process, group)
 
@@ -84,131 +84,90 @@ def chunker(seq, size):
 
 
 @manager.command
-def classifyBusinessWithScorer(scorer=TfidfScorer()):
-    businessPage = Business.query.paginate(1, 500, True)
-    total = businessPage.total
-    i = 0
-    while True:
-        for b in businessPage.items:
-            i += 1
-            sys.stdout.write('\r')
-            sys.stdout.write("[%-50s] %d%% (%d/%d) " % ('=' * ((i + 1)
-                                                               * 50 / total), ((i + 1) * 100 / total), i, total))
-            sys.stdout.flush()
-            code = scoreLogic3(b, scorer.score_business(b))
-            writeClassification(b.unique_id, code)
-        if businessPage.has_next:
-            businessPage = businessPage.next()
-        else:
-            break
-
-
-def scoreLogic1(scores):
-    """
-    argmax
-    """
-    return scores[0][1]
-
-
-def scoreLogic2(scores, threshold=.7):
-    """
-    agrmax if score is above THRESHOLD, else nothing
-    """
-    if scores[0][0] > .7:
-        return scores[0][1]
-    else:
-        return ''
-
-
-def scoreLogic3(b, scores, threshold=.7):
-    topMatch = naics_dict[scores[0][1]]
-    matches = re.findall(r'\(except(.+?)\)', topMatch['title'] + " " + topMatch['description'])
-    matches = sum([m.strip().split() for m in matches], [])
-    black_list = ['of', 'the', 'in', 'for', 'at', 'and', 'or', 'as', 'on', 'real']
-    idx = 0
-    for m in matches:
-        if m in black_list:
-            continue
-        if m in b.name:
-            print m
-            idx = 1
-            break
-    if scores[idx][0] > .7:
-        return scores[idx][1]
-    else:
-        return ''
-
-@manager.command
 def stochasticgradientdescent():
-  weights = util.sample_weights(8,100)
-  index_to_id = loader.get_index_to_id()
-  id_to_bizid = loader.get_id_to_bizid()
-  S = loader.get_S()
+    weights = util.sample_weights(8, 100)
+    index_to_id = loader.get_index_to_id()
+    id_to_bizid = loader.get_id_to_bizid()
+    S = loader.get_S()
 
-  WEIGHTS_DICT = {'prior': 0.12000000000000001, 'd_t_sim': 0.16000000000000003, 't_d_sim': 0.18000000000000002, 'd_d_w2vsim': 0.12000000000000001, 't_t_sim': 0.32, 't_d_w2vsim': 0.1, 'd_t_w2vsim': 0.08, 't_t_w2vsim': 0.14, 'd_d_sim': 0.1}
-  
-  for _ in range(10000):
-    for k in WEIGHTS_DICT.keys():
-      
-      sc = -float("inf")
-      best_dev = .02
-      base = WEIGHTS_DICT[k]
-      for dev in [.02,0,-.02]:
-        WEIGHTS_DICT[k] = base + dev
+    WEIGHTS_DICT = {'prior': 0.12000000000000001, 'd_t_sim': 0.16000000000000003, 't_d_sim': 0.18000000000000002,
+                    'd_d_w2vsim': 0.12000000000000001, 't_t_sim': 0.32, 't_d_w2vsim': 0.1, 'd_t_w2vsim': 0.08, 't_t_w2vsim': 0.14, 'd_d_sim': 0.1}
 
-        w = []
-        for i,j in enumerate(['d_d_sim', 'd_d_w2vsim', 'd_t_sim', 'd_t_w2vsim', 't_d_sim', 't_d_w2vsim', 't_t_sim', 't_t_w2vsim', 'prior']):
-          w.append(WEIGHTS_DICT[j])
+    for _ in range(10000):
+        for k in WEIGHTS_DICT.keys():
 
-        S_prime = [S[i]*w[i] for i in range(len(S))]
-        S_prime = reduce(lambda x,y:x+y, S_prime)
-        for i in range(10000):
-          argmax = np.argmax(S_prime[i,:])
-          ide = index_to_id[argmax]
-          writeClassification(id_to_bizid[i], ide)
-        score = getPredictionScoreOfTrainingSet()
-        if score > sc:
-          sc = score
-          best_dev = dev
-        print sc
+            sc = -float("inf")
+            best_dev = .02
+            base = WEIGHTS_DICT[k]
+            for dev in [.02, 0, -.02]:
+                WEIGHTS_DICT[k] = base + dev
 
-      WEIGHTS_DICT[k] = base + best_dev
-      w = []
-      for i,j in enumerate(['d_d_sim', 'd_d_w2vsim', 'd_t_sim', 'd_t_w2vsim', 't_d_sim', 't_d_w2vsim', 't_t_sim', 't_t_w2vsim', 'prior']):
-        w.append(WEIGHTS_DICT[j])
-      S_prime = [S[i]*w[i] for i in range(len(S))]
-      S_prime = reduce(lambda x,y:x+y, S)
-      for i in range(10000):
-        ide = index_to_id[np.argmax(S_prime[i,:])]
-        writeClassification(id_to_bizid[i], ide)
-      score = predictionScoreOfTrainingSet()
-      if score > sc:
-        sc = score
-        best_dev = dev
-      print sc
-      print WEIGHTS_DICT
+                w = []
+                for i, j in enumerate(['d_d_sim', 'd_d_w2vsim', 'd_t_sim', 'd_t_w2vsim', 't_d_sim', 't_d_w2vsim', 't_t_sim', 't_t_w2vsim', 'prior']):
+                    w.append(WEIGHTS_DICT[j])
+
+                S_prime = [S[i] * w[i] for i in range(len(S))]
+                S_prime = reduce(lambda x, y: x + y, S_prime)
+                for i in range(10000):
+                    argmax = np.argmax(S_prime[i, :])
+                    ide = index_to_id[argmax]
+                    writeClassification(id_to_bizid[i], ide)
+                score = getPredictionScoreOfTrainingSet()
+                if score > sc:
+                    sc = score
+                    best_dev = dev
+                print sc
+
+            WEIGHTS_DICT[k] = base + best_dev
+            w = []
+            for i, j in enumerate(['d_d_sim', 'd_d_w2vsim', 'd_t_sim', 'd_t_w2vsim', 't_d_sim', 't_d_w2vsim', 't_t_sim', 't_t_w2vsim', 'prior']):
+                w.append(WEIGHTS_DICT[j])
+            S_prime = [S[i] * w[i] for i in range(len(S))]
+            S_prime = reduce(lambda x, y: x + y, S)
+            for i in range(10000):
+                ide = index_to_id[np.argmax(S_prime[i, :])]
+                writeClassification(id_to_bizid[i], ide)
+            score = predictionScoreOfTrainingSet()
+            if score > sc:
+                sc = score
+                best_dev = dev
+            print sc
+            print WEIGHTS_DICT
+
 
 
 @manager.option('-s', '--samples', dest='samples', help='Numbers of random weight samples', required=False)
 def classifyBusinesses(samples=1):
     samples = int(samples)
-    WEIGHTS_DICT = {
-        'd_d_sim':  0.862052344506,
-        't_t_sim': 1.5,
-        'd_t_sim': 0.7694268978,
-        't_d_sim': 1.0,
-        't_t_w2vsim': 0.0,
-        'd_d_w2vsim': 0.0,
-        'd_t_w2vsim': 0.0,
-        't_d_w2vsim': 0.0,
-        'prior': .05
-    }
-    THRESHOLD = .6 # [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0, 1.1, 1.2]
+    # ORDER: 'd_d_sim', 'd_d_w2vsim', 'd_t_sim', 'd_t_w2vsim', 't_d_sim', 't_d_w2vsim', 't_t_sim', 't_t_w2vsim', 'prior'
+    WEIGHTS_DICT = OrderedDict([
+        ('d_d_sim',  0.862052344506),
+        ('d_d_w2vsim', 0.1),
+
+        ('d_t_sim', 0.7694268978),
+        ('d_t_w2vsim', 0.1),
+
+        ('t_d_sim', 1.0),
+        ('t_d_w2vsim', 0.2),
+
+        ('t_t_sim', 1.5),
+        ('t_t_w2vsim', 0.5),
+
+        ('prior', .05)
+
+        # ('t_t_w2vsim', 0.5),
+        # ('d_d_w2vsim', 0.1),
+        # ('d_t_w2vsim', 0.1),
+        # ('t_d_w2vsim', 0.2),
+    ])
+    # THRESHOLDS = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0, 1.1, 1.2]
+    THRESHOLD = 1.1
 
     # buzz words
     ids_with_redbox = ids_for_query('redbox', ['name'])
     ids_with_restaurant = ids_for_query('restaurant', ['name', 'business_type', 'description'])
     ids_with_vet = ids_for_query('veterinary', ['name', 'business_type', 'description'])
+    ids_with_insurance = ids_for_query('insurance', ['name', 'business_type'])
     ids_with_dentist = ids_for_query('dentist', ['name', 'business_type', 'description']) \
         + ids_for_query('dental', ['name', 'business_type', 'description'])
     ids_with_bank = ids_for_query('bank', ['business_type'])
@@ -219,7 +178,8 @@ def classifyBusinesses(samples=1):
         + ids_for_query('motel', ['name', 'business_type'])
     ids_with_photo = ids_for_query('photo', ['name', 'business_type'])
 
-    for threshold in xrange(samples):
+    for _ in xrange(samples):
+        print THRESHOLD
         # d_d_sim = random.random()
         # t_t_sim = 1.5
         # d_t_sim = random.random()
@@ -238,10 +198,8 @@ def classifyBusinesses(samples=1):
         row_to_bizid = loader.get_id_to_bizid()
         S = loader.get_S()
 
-        features_list = ['d_d_sim', 'd_d_w2vsim', 'd_t_sim', 'd_t_w2vsim', 't_d_sim', 't_d_w2vsim', 't_t_sim', 't_t_w2vsim', 'prior']
-        w = [WEIGHTS_DICT[k] for k in features_list]
-        S = [Si*wi for Si, wi in zip(S, w)]
-        S = reduce(lambda x,y:x+y, S)
+        S = [Si * wi for Si, wi in zip(S, WEIGHTS_DICT.values())]
+        S = reduce(lambda x, y: x + y, S)
         for i in xrange(10000):
             bizid = row_to_bizid[i]
             if bizid in ids_with_redbox:
@@ -250,6 +208,8 @@ def classifyBusinesses(samples=1):
                 code = 72251
             elif bizid in ids_with_vet:
                 code = 541940
+            elif bizid in ids_with_insurance:
+                code = 524210
             elif bizid in ids_with_dentist:
                 code = 621210
             elif bizid in ids_with_bank:
@@ -265,12 +225,12 @@ def classifyBusinesses(samples=1):
             elif bizid in ids_with_photo:
                 code = 541921
             else:
-                code = column_to_code[np.argmax(S[i,:])]
-                score = np.max(S[i,:])
+                code = column_to_code[np.argmax(S[i, :])]
+                score = np.max(S[i, :])
                 if score > THRESHOLD:
-                    code = column_to_code[np.argmax(S[i,:])]
+                    code = column_to_code[np.argmax(S[i, :])]
                 else:
-                    code = '' # no guess
+                    code = ''  # no guess
             writeClassification(row_to_bizid[i], code)
         # print d_d_sim, t_t_sim, d_t_sim, t_d_sim
         predictionScoreOfTrainingSet()
@@ -286,12 +246,13 @@ def predictionScoreOfTrainingSet():
         guess = algo_classified_set[uid]
         scores.append(util.score_prediction(guess, actual))
     total = sum(scores)
-    max_potential = len(hand_classified_set.keys()) * 6
+    max_potential = len(hand_classified_set.keys()) * 6.0
     print "Score: ", total
     print "Total: ", max_potential
     print "%: ", total / float(max_potential)
     unique, counts = np.unique(scores, return_counts=True)
     print "Frequencies: \n", np.asarray((unique, counts)).T
+
 
 def getPredictionScoreOfTrainingSet():
     hand_classified_set = loader.get_hand_classifiedset()
