@@ -32,12 +32,12 @@
               <tbody>
                 {% for business in businesses.items %}
                   {% with algo_code = algo_classified_set.get(business.unique_id) %}
-                  {% if hand_classified_set.get(business.unique_id) == algo_code and algo_code is not none %}
-                    <tr class="success">
-                  {% elif algo_code is none %}
-                    <tr class="warning">
-                  {% else %}
+                  {% if hand_classified_set.get(business.unique_id) is none %}
+                    <tr>
+                  {% elif hand_classified_set.get(business.unique_id) != algo_code %}
                     <tr class="danger">
+                  {% elif hand_classified_set.get(business.unique_id) == algo_code %}
+                    <tr class="success">
                   {% endif %}
                   {% endwith %}
                   <td>{{ hand_classified_set.get(business.unique_id) }}</td>

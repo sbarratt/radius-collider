@@ -73,8 +73,8 @@ def getOptimalWeights():
   print "Best Score", max(scores)
   print "Best Weights", weights_grid[np.argmin(scores)]
 
-
-def classifyBusinessWithScorer(scorer):
+@manager.command
+def classifyBusinessWithScorer(scorer=TfidfScorer()):
   businessPage = Business.query.paginate(1, 10, True)
   total = businessPage.total
   i = 0
@@ -82,7 +82,7 @@ def classifyBusinessWithScorer(scorer):
     for b in businessPage.items:
       i += 1
       sys.stdout.write('\r')
-      sys.stdout.write("[%-50s] %d%% (%d/%d) " % ('='*((i+1)*50/total), ((i+1)*100/total), i + 1, total))
+      sys.stdout.write("[%-50s] %d%% (%d/%d) " % ('='*((i+1)*50/total), ((i+1)*100/total), i, total))
       sys.stdout.flush()
       writeClassification(b.unique_id, scorer.score_business(b)[0][1])
     if businessPage.has_next:
@@ -90,17 +90,18 @@ def classifyBusinessWithScorer(scorer):
     else:
       break
 
+@manager.command
 def predictionScoreOfTrainingSet():
-  hand_classified_set = loader.get_hand_classified_set()
-  algo_classified_set = loader.get_algo_classified_set()
+  hand_classified_set = loader.get_hand_classifiedset()
+  algo_classified_set = loader.get_algo_classifiedset()
   score = 0
-  for uid, actual in hand_classified_set:
+  for uid, actual in hand_classified_set.iteritems():
     guess = algo_classified_set[uid]
     score += util.score_prediction(guess, actual)
   total = len(hand_classified_set.keys())*6
-  print "Score: " + score
-  print "Total: " + total
-  print "%: " + score/float(total)
+  print "Score: ", score
+  print "Total: ", total
+  print "%: ", score/float(total)
 
 def writeClassification(business_uid, naics_code):
   loader.write_row_algo_classified_set(business_uid, naics_code)
