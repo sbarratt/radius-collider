@@ -181,7 +181,7 @@ def stochasticgradientdescent():
       for i in range(10000):
         ide = index_to_id[np.argmax(S_prime[i,:])]
         writeClassification(id_to_bizid[i], ide)
-      score = getPredictionScoreOfTrainingSet()
+      score = predictionScoreOfTrainingSet()
       if score > sc:
         sc = score
         best_dev = dev
@@ -200,7 +200,8 @@ def classifyBusinesses(samples=1):
         't_t_w2vsim': 0.0,
         'd_d_w2vsim': 0.0,
         'd_t_w2vsim': 0.0,
-        't_d_w2vsim': 0.0
+        't_d_w2vsim': 0.0,
+        'prior': .05
     }
     THRESHOLD = .6 # [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0, 1.1, 1.2]
 
@@ -237,7 +238,7 @@ def classifyBusinesses(samples=1):
         row_to_bizid = loader.get_id_to_bizid()
         S = loader.get_S()
 
-        features_list = ['d_d_sim', 'd_d_w2vsim', 'd_t_sim', 'd_t_w2vsim', 't_d_sim', 't_d_w2vsim', 't_t_sim', 't_t_w2vsim']
+        features_list = ['d_d_sim', 'd_d_w2vsim', 'd_t_sim', 'd_t_w2vsim', 't_d_sim', 't_d_w2vsim', 't_t_sim', 't_t_w2vsim', 'prior']
         w = [WEIGHTS_DICT[k] for k in features_list]
         S = [Si*wi for Si, wi in zip(S, w)]
         S = reduce(lambda x,y:x+y, S)
@@ -291,6 +292,18 @@ def predictionScoreOfTrainingSet():
     print "%: ", total / float(max_potential)
     unique, counts = np.unique(scores, return_counts=True)
     print "Frequencies: \n", np.asarray((unique, counts)).T
+
+def getPredictionScoreOfTrainingSet():
+    hand_classified_set = loader.get_hand_classifiedset()
+    algo_classified_set = loader.get_algo_classifiedset()
+    total = 0
+    scores = []
+    for uid, actual in hand_classified_set.iteritems():
+        guess = algo_classified_set[uid]
+        scores.append(util.score_prediction(guess, actual))
+    total = sum(scores)
+    max_potential = len(hand_classified_set.keys()) * 6
+    return total / float(max_potential)
 
 
 def writeClassification(business_uid, naics_code):
