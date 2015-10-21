@@ -7,7 +7,7 @@ import loader
 from flask.ext.script import Manager
 from models import Business
 from app import app
-from scorers import TfidfScorer
+from scorers import Featurizer
 import util
 import numpy as np
 from multiprocessing import Pool, cpu_count
@@ -51,13 +51,15 @@ def ipyDebug():
     """
     ipy.embed()
 
-
 @manager.option('-c', '--chunk', dest='chunk', help='Specify a chunk [0, 1, 2]', required=True)
 @manager.option('-p', '--processes', dest='num_processes', help='Specify number of processes to use', required=False)
-def loadBusinesses(chunk, num_processes=cpu_count()):
+def loadBusinesses(chunk, num_processes=None):
     assert chunk in ['0', '1', '2'], "Chunk must be 0, 1, or 2"
     businesses = loader.get_challengeset(int(chunk))
+    num_processes = int(num_processes) if num_processes else cpu_count()
     total = len(businesses)
+    global featurizer
+    featurizer = Featurizer()
 
     pool = Pool(processes=num_processes)
 
@@ -70,11 +72,10 @@ def loadBusinesses(chunk, num_processes=cpu_count()):
         sys.stdout.flush()
         pool.map(concurrent_process, group)
 
-
 def concurrent_process(biz):
     if dbh.businessExists(biz['unique_id']):
         return
-    features_dict = TfidfScorer.get_features(biz, naics_items, ADD_SYNONYMS=True)
+    features_dict = featurizer.get_features(biz, naics_items, ADD_SYNONYMS=True)
     business_type = business_types.get(biz['unique_id'].encode())
     dbh.addBusiness(biz, business_type, features_dict)
 
@@ -106,7 +107,9 @@ def stochasticgradientdescent():
     ])
 
     for _ in xrange(10000):
-        for k in shuffle(WEIGHTS_DICT.keys()):
+        keys = WEIGHTS_DICT.keys()
+        shuffle(keys)
+        for k in keys:
 
             sc = -float("inf")
             best_dev = .02
@@ -293,4 +296,5 @@ if __name__ == "__main__":
     naics_items = loader.get_naics_data_for_level(6)
     business_types = loader.get_business_types()
     naics_dict = loader.get_naics_dict()
+    featurizer = None
     manager.run()

@@ -5,7 +5,6 @@ from flask import Flask, render_template, redirect, request, abort
 from db import db
 import dbHelper as dbh
 import loader
-import scorers
 import util
 
 
@@ -73,5 +72,4 @@ if __name__ == "__main__":
     unclassified_business_ids = loader.get_unclassified_business_ids()
     business_types = loader.get_business_types()
     naics_dict = loader.get_naics_dict()
-    scorer = scorers.TfidfScorer()
     app.run(debug=True)

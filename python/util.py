@@ -48,6 +48,25 @@ def cosine_sim(text1, text2):
     return ((tfidf * tfidf.T).A)[0, 1]
 
 
+def removeNans(var):
+    """
+    prune NANs
+    """
+    if type(var) is not np.float64 or np.isnan(var):
+        var = 0.0
+    return float(var)
+
+
+def word2vec_sim(text1, text2, model):
+    w1 = filter(lambda x: x in model.vocab,
+                clean_paragraph(text1))
+    w2 = filter(lambda x: x in model.vocab,
+                clean_paragraph(text2))
+    if not w1 or not w2:
+        return .1  # default value
+    return model.n_similarity(w1, w2)
+
+
 def add_synonyms(words):
     """ Return list of synonyms of words in words """
     more_words = []
