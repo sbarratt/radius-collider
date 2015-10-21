@@ -93,6 +93,7 @@
           <li class="previous {% if not businesses.has_prev %}disabled{% endif %} ">
             <a {% if businesses.has_prev %} href="{{ url_for('databaseView', page=businesses.prev_num) }}"{% endif %}><span aria-hidden="true">&larr;</span> Older</a>
           </li>
+          <li>Showing {{(businesses.page-1)*businesses.per_page + 1}} - {{(businesses.page)*businesses.per_page}} of {{businesses.total}} (page {{businesses.page}} of {{businesses.pages}})</li>
           <li class="next {% if not businesses.has_next %}disabled{% endif %}">
             <a {% if businesses.has_next %} href="{{ url_for('databaseView', page=businesses.next_num) }} {% endif %}">Newer <span aria-hidden="true">&rarr;</span>
           </a></li>
