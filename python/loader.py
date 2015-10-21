@@ -201,13 +201,29 @@ def write_row_hand_classified_set(business_uid, naics_code):
 def write_row_algo_classified_set(business_uid, naics_code):
   with open(DATA_DIR+'algo_classified_set.csv', 'a') as algo_classified_set:
     wr = csv.writer(algo_classified_set)
-    wr.writerow( ( business_uid, naics_code) )
+    wr.writerow( (business_uid, naics_code) )
 
 def get_id_to_index():
   return pickle.load(open(DATA_DIR+"classification/id_to_index.pickle","r"))
 
 def get_index_to_id():
   return pickle.load(open(DATA_DIR+"classification/index_to_id.pickle","r"))
+
+def get_industry_counts():
+  industry_counts = {}
+  with open(DATA_DIR+'industry_counts.csv', 'rb') as csvfile:
+    reader = csv.reader(csvfile, delimiter=',')
+    for row in reader:
+      industry_counts[int(row[0])] = int(row[1])
+  return industry_counts
+
+def get_normalized_industry_counts():
+  industry_counts = get_industry_counts()
+  new_industry_counts = dict()
+  x = reduce(lambda a,b: a+b, industry_counts.values())
+  for k in industry_counts.keys():
+    new_industry_counts[k] = industry_counts[k]*1.0/x
+  return new_industry_counts
 
 def get_S():
   S = []
