@@ -277,7 +277,7 @@ def get_S():
     :return: list of similarity matrices
     """
     S = []
-    for i in range(9):
+    for i in xrange(9):
         S.append(np.load(DATA_DIR + "classification/s" + str(i) + ".npy"))
     return S
 

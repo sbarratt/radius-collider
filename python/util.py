@@ -102,7 +102,7 @@ def sample_weights(w=8, n=1000):
     :return: list of weight dictionaries
     """
     l = []
-    for i in range(n):
+    for i in xrange(n):
         z = np.random.rand(w)
         z = z / sum(z)
         features = {
