@@ -12,7 +12,9 @@ data/classification/s4.npy
 data/classification/s5.npy
 data/classification/s6.npy
 data/classification/s7.npy
+data/classification/s8.npy
 data/classification/S.pickle
+data/algo_classified_set.csv
 
 #####=== Python ===#####
 

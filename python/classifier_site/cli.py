@@ -138,6 +138,56 @@ def scoreLogic3(b, scores, threshold=.7):
     else:
         return ''
 
+@manager.command
+def stochasticgradientdescent():
+  weights = util.sample_weights(8,100)
+  index_to_id = loader.get_index_to_id()
+  id_to_bizid = loader.get_id_to_bizid()
+  S = loader.get_S()
+
+  WEIGHTS_DICT = {'prior': 0.12000000000000001, 'd_t_sim': 0.16000000000000003, 't_d_sim': 0.18000000000000002, 'd_d_w2vsim': 0.12000000000000001, 't_t_sim': 0.32, 't_d_w2vsim': 0.1, 'd_t_w2vsim': 0.08, 't_t_w2vsim': 0.14, 'd_d_sim': 0.1}
+  
+  for _ in range(10000):
+    for k in WEIGHTS_DICT.keys():
+      
+      sc = -float("inf")
+      best_dev = .02
+      base = WEIGHTS_DICT[k]
+      for dev in [.02,0,-.02]:
+        WEIGHTS_DICT[k] = base + dev
+
+        w = []
+        for i,j in enumerate(['d_d_sim', 'd_d_w2vsim', 'd_t_sim', 'd_t_w2vsim', 't_d_sim', 't_d_w2vsim', 't_t_sim', 't_t_w2vsim', 'prior']):
+          w.append(WEIGHTS_DICT[j])
+
+        S_prime = [S[i]*w[i] for i in range(len(S))]
+        S_prime = reduce(lambda x,y:x+y, S_prime)
+        for i in range(10000):
+          argmax = np.argmax(S_prime[i,:])
+          ide = index_to_id[argmax]
+          writeClassification(id_to_bizid[i], ide)
+        score = getPredictionScoreOfTrainingSet()
+        if score > sc:
+          sc = score
+          best_dev = dev
+        print sc
+
+      WEIGHTS_DICT[k] = base + best_dev
+      w = []
+      for i,j in enumerate(['d_d_sim', 'd_d_w2vsim', 'd_t_sim', 'd_t_w2vsim', 't_d_sim', 't_d_w2vsim', 't_t_sim', 't_t_w2vsim', 'prior']):
+        w.append(WEIGHTS_DICT[j])
+      S_prime = [S[i]*w[i] for i in range(len(S))]
+      S_prime = reduce(lambda x,y:x+y, S)
+      for i in range(10000):
+        ide = index_to_id[np.argmax(S_prime[i,:])]
+        writeClassification(id_to_bizid[i], ide)
+      score = getPredictionScoreOfTrainingSet()
+      if score > sc:
+        sc = score
+        best_dev = dev
+      print sc
+      print WEIGHTS_DICT
+
 
 @manager.option('-s', '--samples', dest='samples', help='Numbers of random weight samples', required=False)
 def classifyBusinesses(samples=1):
