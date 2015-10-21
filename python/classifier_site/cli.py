@@ -163,7 +163,7 @@ def classifyBusinessFast():
     }
     index_to_id = loader.get_index_to_id()
     id_to_bizid = loader.get_id_to_bizid()
-    S = loader.get_S()
+    S = loader.get_S() 
 
     w = []
     for i,j in enumerate(['d_d_sim', 'd_d_w2vsim', 'd_t_sim', 'd_t_w2vsim', 't_d_sim', 't_d_w2vsim', 't_t_sim', 't_t_w2vsim']):
