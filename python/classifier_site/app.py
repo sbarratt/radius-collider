@@ -28,18 +28,7 @@ def agentspage():
 
 @app.route("/classifier/<agent>")
 def classifypage(agent):
-  # TODO un-comment after db is mergered
-  # if agent == 'myles':
-  #   next_id = unclassified_business_ids.pop(-1)
-  # elif agent == 'alex':
-  #   next_id = unclassified_business_ids.pop()
-  # elif agent == 'shane':
-  #   middle = len(unclassified_business_ids)//2
-  #   next_id = unclassified_business_ids.pop(middle)
-  # else:
-  #   abort(405)
-  # TODO uncomment after everything loaded to db
-  business = dbh.getNextUnclassifiedBusiness(unclassified_business_ids)
+  business = dbh.getNextUnclassifiedBusiness(unclassified_business_ids, agent)
   if business == None:
     abort(410)
   return render_template('classifypage.html', business=business, naics_dict=naics_dict, agent=agent)
