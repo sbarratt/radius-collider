@@ -11,6 +11,7 @@ import util
 import numpy as np
 from multiprocessing import Pool, cpu_count
 import IPython as ipy
+import random
 
 manager = Manager(app)
 
@@ -93,6 +94,48 @@ def classifyBusinessWithScorer(scorer=TfidfScorer()):
       businessPage = businessPage.next()
     else:
       break
+
+@manager.command
+def classifyBusinessFast():
+  # WEIGHTS_DICT = {
+  #    'd_d_sim': .1,
+  #    't_t_sim': .2,
+  #    'd_t_sim': .1,
+  #    't_d_sim': .1,
+  #    't_t_w2vsim': 0.0,
+  #    'd_d_w2vsim': 0.0,
+  #    'd_t_w2vsim': 0.0,
+  #    't_d_w2vsim': 0.0
+  # }
+  for _ in range(100):
+    d_d_sim = random.random()
+    t_t_sim = 1.5
+    d_t_sim = random.random()
+    t_d_sim = 1.0
+    WEIGHTS_DICT = {
+       'd_d_sim': d_d_sim,
+       't_t_sim': t_t_sim,
+       'd_t_sim': d_t_sim,
+       't_d_sim': t_d_sim,
+       't_t_w2vsim': 0.0,
+       'd_d_w2vsim': 0.0,
+       'd_t_w2vsim': 0.0,
+       't_d_w2vsim': 0.0
+    }
+    index_to_id = loader.get_index_to_id()
+    id_to_bizid = loader.get_id_to_bizid()
+    S = loader.get_S()
+
+    w = []
+    for i,j in enumerate(['d_d_sim', 'd_d_w2vsim', 'd_t_sim', 'd_t_w2vsim', 't_d_sim', 't_d_w2vsim', 't_t_sim', 't_t_w2vsim']):
+      w.append(WEIGHTS_DICT[j])
+    S = [S[i]*w[i] for i in range(len(S))]
+    S = reduce(lambda x,y:x+y, S) 
+    for i in range(10000):
+      ide = index_to_id[np.argmax(S[i,:])]
+      writeClassification(id_to_bizid[i], ide)
+    print d_d_sim, t_t_sim, d_t_sim, t_d_sim
+    predictionScoreOfTrainingSet()
 
 @manager.command
 def predictionScoreOfTrainingSet():

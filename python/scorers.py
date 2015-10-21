@@ -13,17 +13,13 @@ WIEGHTS_DICT = {
    'd_d_w2vsim': .2,
    'd_t_w2vsim': .2,
    't_d_w2vsim': .2
-  #  't_t_w2v_reuters_sim': .1,
-  # 'd_d_w2v_reuters_sim': .1,
-  # 'd_t_w2v_reuters_sim': .1,
-  # 't_d_w2v_reuters_sim': .1
 }
 
 class TfidfScorer:
   google_types = loader.get_business_types()
-  model = loader.get_word2vecmodel()
+  # model = loader.get_word2vecmodel()
   # reuters_model = loader.get_word2vecmodel_reuters()
-  print "Loaded Models"
+  # print "Loaded Models"
 
   def __init__(self, weights_dict = WIEGHTS_DICT):
     self.weights_dict = weights_dict

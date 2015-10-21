@@ -209,6 +209,9 @@ def get_id_to_index():
 def get_index_to_id():
   return pickle.load(open(DATA_DIR+"classification/index_to_id.pickle","r"))
 
+def get_id_to_bizid():
+  return pickle.load(open(DATA_DIR+"classification/id_to_bizid.pickle","r"))
+
 def get_industry_counts():
   industry_counts = {}
   with open(DATA_DIR+'industry_counts.csv', 'rb') as csvfile:
