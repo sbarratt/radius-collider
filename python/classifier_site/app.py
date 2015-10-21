@@ -1,4 +1,5 @@
 from os import sys, path
+
 sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
 from flask import Flask, render_template, redirect, request, abort
 from db import db
@@ -9,6 +10,9 @@ import util
 
 
 def create_app():
+    """
+    creats a flask app with configs and connect db
+    """
     app = Flask(__name__)
     app.config.from_object('config')
     app.jinja_env.add_extension('jinja2.ext.loopcontrols')
@@ -18,6 +22,7 @@ def create_app():
     with app.app_context():
         db.create_all()
     return app
+
 
 app = create_app()
 
@@ -57,8 +62,9 @@ def classifyBusiness(agent, test, business_uid, naics_code):
 @app.route('/database/<int:page>', methods=['GET'])
 def databaseView(page=1):
     businesses = dbh.getBusinessPage(page)
-    return render_template('database.html', businesses=businesses,
-                           hand_classified_set=hand_classified_set, algo_classified_set=algo_classified_set, naics_dict=naics_dict)
+    return render_template('database.html', businesses=businesses, hand_classified_set=hand_classified_set,
+                           algo_classified_set=algo_classified_set, naics_dict=naics_dict)
+
 
 if __name__ == "__main__":
     naics_items = loader.get_naics_data_for_level(6)

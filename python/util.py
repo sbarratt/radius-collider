@@ -1,4 +1,5 @@
 from os import sys, path
+
 sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
 from nltk.corpus import wordnet as wn
 from nltk.corpus import wordnet
@@ -13,13 +14,17 @@ import re
 
 
 def stem_tokens(tokens):
+    """
+    :param tokens: a list of tokens
+    :return: a list of stemmed tokens
+    """
     stemmer = nltk.stem.porter.PorterStemmer()
     return [stemmer.stem(item) for item in tokens]
 
 
 def normalize(text):
     """
-    remove punctuation, lowercase, stem
+    remove punctuation, lowercase, and stem
     """
     remove_punctuation_map = dict((ord(char), None)
                                   for char in string.punctuation)
@@ -27,12 +32,17 @@ def normalize(text):
 
 
 def dotproduct(l1, l2):
+    """
+    :return: scalar of the dot product of the two lists
+    """
     assert len(l1) == len(l2), "lists are different length"
     return float(np.array(l1).dot(np.array(l2)))
 
 
 def cosine_sim(text1, text2):
-    """ Return the cosine similarity between text1 and text2 """
+    """
+    :return: cosine similarity between text1 and text2
+    """
     vectorizer = TfidfVectorizer(tokenizer=normalize, stop_words='english')
     tfidf = vectorizer.fit_transform([text1, text2])
     return ((tfidf * tfidf.T).A)[0, 1]
@@ -56,11 +66,17 @@ def add_synonyms(words):
 
 
 def add_synonyms_to_text(text):
+    """
+    :param text: string
+    :return: string containing original string with synonyms
+    """
     return ' '.join(add_synonyms(clean_paragraph(text)))
 
 
 def clean_paragraph(text):
-    """ Cleans and Tokenizes text (str) """
+    """
+    Cleans and Tokenizes string
+    """
     text = re.sub(r'\(except(.+?)\)', '', text)  # removes (except ...)
 
     tokenizer = RegexpTokenizer(r'\w+')
@@ -80,6 +96,11 @@ def clean_paragraph(text):
 
 
 def sample_weights(w=8, n=1000):
+    """
+    :param w: number of weights
+    :param n: number of samples
+    :return: list of weight dictionaries
+    """
     l = []
     for i in range(n):
         z = np.random.rand(w)
@@ -99,6 +120,11 @@ def sample_weights(w=8, n=1000):
 
 
 def bucket_guesses(guesses, threshold=0):
+    """
+    :param guesses: list of tuples (score, 6 digit NAICS code))
+    :param threshold: limit to bucket above scores
+    :return: list of tuples (summed score, 3 code NAICS code))
+    """
     codes = {}
     for score, naic_code in guesses:
         if score > threshold:
@@ -110,24 +136,34 @@ def bucket_guesses(guesses, threshold=0):
 
 
 def score_prediction(guess, actual):
+    """
+    :param guess: NAICS code
+    :param actual: ground truth NAICS
+    :return: score
+    """
     assert actual is not None, 'Need a ground truth score'
     if guess == '' or guess is None:
         return 0
     if guess[:2] != actual[:2]:
         return -2
-    sum = 0
+    score = 0
     for idx, c in enumerate(actual):
         if (idx + 1) > len(guess):
             break
         if c == guess[idx]:
-            sum += 1
+            score += 1
         else:
-            sum -= 1
+            score -= 1
             break
-    return sum
+    return score
 
 
 def get_score_color(guess, actual):
+    """
+    :param guess: NAICS code
+    :param actual: ground truth NAICS
+    :return: color corresponding to the score for database.html
+    """
     if actual == None:
         return '#DDDDDD'
     score = score_prediction(guess, actual)

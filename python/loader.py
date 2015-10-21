@@ -16,11 +16,11 @@ def get_idtoloc():
 
     Response Format:
     {
-    u'1fe9adec-46f3-48f8-9fdd-4b715115a091': (38.3401715, -85.6214021),
-    u'1fee61a2-571d-4789-ac98-3d670bc9acb3': (39.871075, -84.889905),
-    u'1fee61a2-571d-4789-ac98-3d670bc9acb3': (None, None),
-    ...
-    u'2002c9ca-45a5-49a1-921b-191b2760c89f': (35.3930786, -119.120998),
+        u'1fe9adec-46f3-48f8-9fdd-4b715115a091': (38.3401715, -85.6214021),
+        u'1fee61a2-571d-4789-ac98-3d670bc9acb3': (39.871075, -84.889905),
+        u'1fee61a2-571d-4789-ac98-3d670bc9acb3': (None, None),
+        ...
+        u'2002c9ca-45a5-49a1-921b-191b2760c89f': (35.3930786, -119.120998),
     }
     """
     return pickle.load(open(DATA_DIR + 'id_to_loc.pickle', 'r'))
@@ -31,12 +31,12 @@ def get_naicslist():
 
     Response Format:
     [
-    {
-      "code": 928120,
-      "description": "This industry comprises establishments of U.S. and foreign governments primarily engaged in international affairs and programs relating to other nations and peoples.",
-      "title": "International Affairs"
-    },
-    ...
+        {
+            "code": 928120,
+            "description": "This industry comprises establishments of U.S. and foreign governments pr...",
+            "title": "International Affairs"
+        },
+        ...
     ]
     """
     ipy.embed
@@ -47,11 +47,12 @@ def get_naics_dict():
     """ Returns dict of json naics code to objects
 
     Response Format:
-    [
     {
-      "code": 928120,
-      "description": "This industry comprises establishments of U.S. and foreign governments primarily engaged in international affairs and programs relating to other nations and peoples.",
-      "title": "International Affairs"
+        "928120": {
+            "code": 928120,
+            "description": "This industry comprises establishments of U.S. and foreign governments primarily ...",
+            "title": "International Affairs"
+        }
     },
     ...
     ]
@@ -67,10 +68,10 @@ def get_test_classifiedset():
 
     Response Format:
     {
-    'c7103540-d25d-4f7f-9b4d-984eecf6ff7b': '54',
-    'df039e7a-a0b5-4700-9823-1119c771f59f': '51',
-    ...
-    'fe389cac-3795-4b4c-9d09-39b77e166f5a': '444'
+        'c7103540-d25d-4f7f-9b4d-984eecf6ff7b': '54',
+        'df039e7a-a0b5-4700-9823-1119c771f59f': '51',
+        ...
+        'fe389cac-3795-4b4c-9d09-39b77e166f5a': '444'
     }
     """
     with open(DATA_DIR + 'classified_set.csv', 'rb') as csvfile:
@@ -86,10 +87,10 @@ def get_hand_classifiedset():
 
     Response Format:
     {
-    'c7103540-d25d-4f7f-9b4d-984eecf6ff7b': '54',
-    'df039e7a-a0b5-4700-9823-1119c771f59f': '51',
-    ...
-    'fe389cac-3795-4b4c-9d09-39b77e166f5a': '444'
+        'c7103540-d25d-4f7f-9b4d-984eecf6ff7b': '54',
+        'df039e7a-a0b5-4700-9823-1119c771f59f': '51',
+        ...
+        'fe389cac-3795-4b4c-9d09-39b77e166f5a': '444'
     }
     """
     with open(DATA_DIR + 'hand_classified_set.csv', 'rb') as csvfile:
@@ -105,10 +106,10 @@ def get_algo_classifiedset():
 
     Response Format:
     {
-    'c7103540-d25d-4f7f-9b4d-984eecf6ff7b': '54',
-    'df039e7a-a0b5-4700-9823-1119c771f59f': '51',
-    ...
-    'fe389cac-3795-4b4c-9d09-39b77e166f5a': '444'
+        'c7103540-d25d-4f7f-9b4d-984eecf6ff7b': '54',
+        'df039e7a-a0b5-4700-9823-1119c771f59f': '51',
+        ...
+        'fe389cac-3795-4b4c-9d09-39b77e166f5a': '444'
     }
     """
     with open(DATA_DIR + 'algo_classified_set.csv', 'rb') as csvfile:
@@ -120,6 +121,9 @@ def get_algo_classifiedset():
 
 
 def reset_algo_classifiedset():
+    """
+    deletes contents of the algo_classified_set
+    """
     open(DATA_DIR + 'algo_classified_set.csv', 'w').close()
 
 
@@ -128,12 +132,13 @@ def get_challengeset(chunk=None):
 
     Response Format:
     [
-    {u'address': u'2136 PLEASANT HILL RD, MARION OH 43302',
-    u'description': u'If you are looking for the best prices on any of the Amsoil Products, Feel free to contact Terri or Dwight Lohr Amsoil Dealer Number 5266770',
-    u'name': u'marion amsoil dealer',
-    u'unique_id': u'ed6ad152-a7d3-4fdc-b3d9-aff1094d3ea5',
-    u'website': [u'http://www.amsoil.com']},
-    ...
+        {   u'address': u'2136 PLEASANT HILL RD, MARION OH 43302',
+            u'description': u'If you are looking for the best prices on any of the Amsoil Prod...',
+            u'name': u'marion amsoil dealer',
+            u'unique_id': u'ed6ad152-a7d3-4fdc-b3d9-aff1094d3ea5',
+            u'website': [u'http://www.amsoil.com']
+        },
+        ...
     ]
     """
     challenge_set = json.load(open(DATA_DIR + 'challenge_set.json', 'r'))
@@ -153,11 +158,11 @@ def get_business_types():
 
     Response Format:
     {
-    u'1fe9adec-46f3-48f8-9fdd-4b715115a091': restaurant,
-    u'1fee61a2-571d-4789-ac98-3d670bc9acb3': cafe,
-    u'1fee61a2-571d-4789-ac98-3d670bc9acb3': None,
-    ...
-    u'2002c9ca-45a5-49a1-921b-191b2760c89f': museum,
+        u'1fe9adec-46f3-48f8-9fdd-4b715115a091': restaurant,
+        u'1fee61a2-571d-4789-ac98-3d670bc9acb3': cafe,
+        u'1fee61a2-571d-4789-ac98-3d670bc9acb3': None,
+        ...
+        u'2002c9ca-45a5-49a1-921b-191b2760c89f': museum,
     }
     """
     try:
@@ -165,12 +170,11 @@ def get_business_types():
     except IOError:
         return {}
 
-
-def dump_business_dict(b_dict):
-    pickle.dump(b_dict, open(DATA_DIR + 'business_types.pickle', 'w'))
-
-
 def get_naics_data_for_level(code_length):
+    """
+    :param code_length: length in digits of NAICS code 1-6
+    :return: all the NAICS objects with 'code_length' digits
+    """
     naics_data = get_naicslist()
     results = []
     for naics_item in naics_data:
@@ -180,6 +184,9 @@ def get_naics_data_for_level(code_length):
 
 
 def get_unclassified_business_ids():
+    """
+    :return: all ids for unclassified_busniesses
+    """
     businesses = get_challengeset()
     unclassified_ids = []
     ids = get_classified_business_ids()
@@ -202,6 +209,9 @@ def get_word2vecmodel_reuters():
 
 
 def get_classified_business_ids():
+    """
+    :return: all business_ids that are classified
+    """
     test_classified_set = get_test_classifiedset()
     hand_classified_set = get_hand_classifiedset()
     return list(set(test_classified_set.keys()) | set(hand_classified_set.keys()))
@@ -237,7 +247,14 @@ def get_id_to_bizid():
     return pickle.load(open(DATA_DIR + "classification/id_to_bizid.pickle", "r"))
 
 
+def dump_business_dict(b_dict):
+    pickle.dump(b_dict, open(DATA_DIR + 'business_types.pickle', 'w'))
+
+
 def get_industry_counts():
+    """
+    :return: returns a dictionary of each NAICS code to its respective number of business
+    """
     industry_counts = {}
     with open(DATA_DIR + 'industry_counts.csv', 'rb') as csvfile:
         reader = csv.reader(csvfile, delimiter=',')
@@ -256,6 +273,9 @@ def get_normalized_industry_counts():
 
 
 def get_S():
+    """
+    :return: list of similarity matrices
+    """
     S = []
     for i in range(8):
         S.append(np.load(DATA_DIR + "classification/s" + str(i) + ".npy"))

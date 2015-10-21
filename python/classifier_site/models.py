@@ -1,4 +1,5 @@
 from os import sys, path
+
 sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
 from db import db
 import util
@@ -13,8 +14,7 @@ class Business(db.Model):
     description = db.Column(db.Text)
     website = db.Column(db.String(40))
     business_type = db.Column(db.String(40))
-    # dictionary of NAICS codes to features
-    features_dict = db.Column(db.PickleType)
+    features_dict = db.Column(db.PickleType)  # dictionary of NAICS codes to features
 
     def __init__(self, business, business_type, features_dict):
         self.unique_id = business['unique_id']

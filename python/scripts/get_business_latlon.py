@@ -4,6 +4,7 @@ python/get_business_latlon.py
 Script to get businesses lat and lon and write to a pickle file
 """
 from os import sys, path
+
 sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
 import loader
 import requests
@@ -12,17 +13,17 @@ import pickle
 
 
 class GoogleGeocodingApi:
-
     def __init__(self):
-        # self.api_key = 'AIzaSyAQOpIyo2L-6SpL3e5lylN-dnahV9MPC5I' #we're kind of limited to 2,500 requests / day
+        # self.api_key = 'AIzaSyAQOpIyo2L-6SpL3e5lylN-dnahV9MPC5I'
         # self.api_key = 'AIzaSyAyfNXRsPPrp01iWz7EA2xmxge7NcUELxY'
         raise Exception("No api key")
 
     def decode_address(self, address):
-        # Input: address (string)
-        # Output: lat, lon (int)
-        uri = 'https://maps.googleapis.com/maps/api/geocode/json?address=%s&key=%s' % (
-            address, self.api_key)
+        """
+        :param address: string
+        :return: lat, lon (int)
+        """
+        uri = 'https://maps.googleapis.com/maps/api/geocode/json?address=%s&key=%s' % (address, self.api_key)
         resp = json.loads(requests.get(uri).content)
         try:
             temp = resp['results'][0]['geometry']['location']
@@ -43,6 +44,7 @@ def get_business_lat_lon():
             lat, lng = gapi.decode_address(address)
             id_to_loc[unique_id] = (lat, lng)
         pickle.dump(id_to_loc, open('../../data/id_to_loc.pickle', 'w'))
+
 
 if __name__ == '__main__':
     get_business_lat_lon()

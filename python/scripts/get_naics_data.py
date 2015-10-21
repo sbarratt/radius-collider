@@ -4,13 +4,12 @@ python/get_naics_data.py
 Script to dump descriptions from CodeForAmerica NAICS API into ../naics_list.json
 """
 
-if __name__ == '__main__' and __package__ is None:
-    from os import sys, path
-    sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
-    import loader
-    import requests
-    import csv
-    import json
+from os import sys, path
+sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
+import loader
+import requests
+import csv
+import json
 
 
 def url(code):

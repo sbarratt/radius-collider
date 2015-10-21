@@ -48,7 +48,6 @@ mylesBusinesses = dbMylesSession.query(Business).all()
 alexBusinesses = dbAlexSession.query(Business).all()
 shaneBusinesses = dbShaneSession.query(Business).all()
 
-
 dbAll = create_engine('sqlite:///' + os.path.join(basedir, 'dbs/app_all.db'))
 dbAllSession = sessionmaker(dbAll)()
 Base.metadata.create_all(bind=dbAll)
@@ -74,4 +73,4 @@ for session in [dbMylesSession, dbAlexSession, dbShaneSession]:
             break
     print '\n'
 
-print "Done"
+print "Done Merging"

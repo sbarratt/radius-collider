@@ -38,8 +38,3 @@ def getNextUnclassifiedBusiness(unclassified_set, agent):
         if businessExists(next_id):
             return getBusinessWithId(next_id)
     return None
-
-
-def getFirstBusiness():
-    return Business.query.first()
-    # return Business.query.all()[9]
