@@ -101,6 +101,8 @@ def score_prediction(guess, actual):
     return -2
   sum = 0
   for idx, c in enumerate(actual):
+    if (idx + 1) > len(guess):
+      break
     if c == guess[idx]:
       sum += 1
     else:

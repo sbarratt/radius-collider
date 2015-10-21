@@ -1,11 +1,6 @@
 from os import sys, path
 sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
 import loader
-import requests
-import json
-import pickle
-from util import cosine_sim
-import IPython as ipy
 
 def clean_business_types():
   business_types_dict = loader.get_business_types()
