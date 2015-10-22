@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 from os import sys, path
 
 sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
@@ -51,6 +53,9 @@ def ipyDebug():
 @manager.option('-c', '--chunk', dest='chunk', help='Specify a chunk [0, 1, 2]', required=True)
 @manager.option('-p', '--processes', dest='num_processes', help='Specify number of processes to use', required=False)
 def loadBusinesses(chunk, num_processes=None):
+    """
+    Loads businesses. Specify a chunk to only load subsets of the businesses. Also specify number of procecesses to use.
+    """
     assert chunk in ['0', '1', '2'], "Chunk must be 0, 1, or 2"
     businesses = loader.get_challengeset(int(chunk))
     num_processes = int(num_processes) if num_processes else cpu_count()
@@ -85,12 +90,18 @@ def chunker(seq, size):
 
 @manager.command
 def stochasticgradientdescent():
+    """
+    Runs stochastic gradient descent (randomly perturbs a weight and only keeps pertubations that increase the score)
+    """
     # late import
     from scorers import StochasticDescent
     StochasticDescent()
 
 @manager.command
 def classifyBusinesses():
+    """
+    Runs Classifier in scorers (most up to date classifier)
+    """
     # late import
     from scorers import Classifier
 
@@ -102,6 +113,9 @@ def classifyBusinesses():
 
 @manager.command
 def predictionScoreOfTrainingSet():
+    """
+    Print evaluation of classifications on the validation set. 
+    """
     # late import
     from scorers import Scorer
     scorer = Scorer()
@@ -115,6 +129,9 @@ def predictionScoreOfTrainingSet():
 
 
 def getPredictionScoreOfTrainingSet():
+    """
+    Returns the score of the classifications on the validation set.
+    """
     hand_classified_set = loader.get_hand_classifiedset()
     algo_classified_set = loader.get_algo_classifiedset()
     total = 0

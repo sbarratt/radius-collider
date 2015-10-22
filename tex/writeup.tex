@@ -1,4 +1,4 @@
-\documentclass[letterpaper, 10 pt, conference]{IEEEtran}
+\documentclass[letterpaper, 9 pt, conference]{IEEEtran}
 
 % See the \addtolength command later in the file to balance the column lengths
 % on the last page of the document
@@ -46,20 +46,15 @@ Radius Collider Submission - The Approximators
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{INTRODUCTION}
 
-The goal of this project was to determine the best North American Industry Classification System (NAICS) code for a business based on its name, address, description, and website. To solve this problem, we incorporated several techniques from a variety of fields: text cleaning, data augmentation, tf-idf \cite{tfidf}, wordnet \cite{wordnet}, neural word embeddings \cite{neural} and cross-validation. A pure supervised learner would be tough to model/train with less training data points than classes, so we went with what one could call a 'topic modeling' approach.
+The North American Industry Classification System (NAICS) is the standard used by Federal statistical agencies in classifying business establishments 
+
+The goal of this project was to determine the best North American Industry Classification System (NAICS) code, for a business based on its name, address, description, and website. For example, a Safeway would be classified as the code 445110 (Supermarkets and Other Grocery, except Grocery). To solve this problem, we incorporated several techniques from a variety of fields: text cleaning, data augmentation, tf-idf, wordnet, neural word embeddings and cross-validation. A pure supervised learner would be tough to model/train as there are less training data points than classes, so we went with what one could call a 'topic modeling' and 'rule based' approach.
 
 \section{DATA}
 
-To increase the amount of data on businesses and NAICS codes, we aggregated some data from public APIs:
-\begin{itemize}
-\item Google Places business type
-\item NAICS code titles
-\item NAICS code descriptions
-\item Frequency of NAICS 2-long industry codes
-\end{itemize}
-The respective scripts are listed in List 1 in the appendix.
+To increase the amount of data on businesses and NAICS codes, we aggregated some data from public APIs including Google Places business type, NAICS code titles/descriptions, and NAICS code freqeuncies. The respective scripts are listed in List 1 in the appendix.
 
-We also created a function to remove stop words, lemmatize, lowercase, tokenize. We did this to normalize the text being compared. We also enhanced the richness of the text by adding synonyms obtained through the WordNet model.
+We also performed transformed the data: stripped stop words, lemmatized, lowercased, tokenized. We did this to normalize the text for comparisons. We also enhanced the richness of the text by adding synonyms obtained through the WordNet model \cite{wordnet}.
 
 \section{WEB APP}
 
@@ -71,15 +66,13 @@ To ease the painful process of hand-classification, we built a web application i
 
 To further understand the structure of the data and the quality of our classifier, we also built an additional endpoint to read the hand-classification and algorithm-classification databases. It displays a table of businesses with our hand-classification and algorithm-classification so that we could discern what we got it wrong and why. Refer to Figure 2 of the Appendix.
 
-\section{TECHNICAL MODELING DETAILS}
+\section{The Algorithm}
 
-Let the set of businesses be denoted by $\{b_1,b_2,\dots,b_n\}$ and the set of NAICS codes by $\{c_1,c_2,\dots,c_m\}$. The algorithm attempts to construct a similarity matrix $\matr{S}$ of dimension $n$x$m$ where $\matr{S}_{i,j}$ denotes the similarity between business $i$ and NAICS code $j$. The classification for business (row) $i$ is $\argmax_{1 \leq j \leq m} \matr{S}_{i,j}$, the most similar NAICS code to that business. To construct this matrix, we first construct 9 similarity matrices, $\{\matr{S}_1,\matr{S}_2,\dots,\matr{S}_9\}$ with the same dimension. There are 4 ways to pair the business (B) and NAICS (N) $\rightarrow$ \{(B.name, B.description) X (N.name, N.description)\}. Therefore, the two similarity methods, \textit{tf-idf} cosine similarity and \textit{word2vec} cosine similarity, with these 4 text combinations as well as a similarity matrix of 2-digit industry priors (independent of the business) constitute the 9 similarity matrices. The final similarity matrix is a convex combination of the preliminaries: \[ \matr{S} = \sum_{i=1}^9 w_i \matr{S}_i, \]
+Let the set of businesses be denoted by $\{b_1,b_2,\dots,b_n\}$ and the set of NAICS codes by $\{c_1,c_2,\dots,c_m\}$. The algorithm attempts to construct a similarity matrix $\matr{S}$ of dimension $n$x$m$ where $\matr{S}_{i,j}$ denotes the similarity between business $i$ and NAICS code $j$. The classification for business (row) $i$ is $\argmax_{1 \leq j \leq m} \matr{S}_{i,j}$, the most similar NAICS code to that business. To construct this matrix, we first construct 9 similarity matrices, $\{\matr{S}_1,\matr{S}_2,\dots,\matr{S}_9\}$ with the same dimension. There are 4 ways to pair the business (B) and NAICS (N) $\rightarrow$ \{(B.name, B.description) X (N.name, N.description)\}. Therefore, the two similarity methods, \textit{tf-idf} cosine similarity \cite{tfidf} and \textit{word2vec} cosine similarity \cite{neural}, with these 4 text combinations as well as a similarity matrix of 2-digit industry priors (independent of the business) constitute the 9 similarity matrices. The final similarity matrix is a convex combination of the preliminaries: \[ \matr{S} = \sum_{i=1}^9 w_i \matr{S}_i, \]
 
 where $\sum_{i=1}^9 w_i=1$. The weights were selected through random hyper-parameter search \cite{random}.
 
-% \subsection{Bucketing}
-
-% Each businesses has its own list of probable NAICS codes each assigned a score, with a higher score representing a more probable chance that business is classified under that score. We also summed over all the scores by chopping then to their first 3 digits - this is the 3-code-buckets. This helps gives us a prediction of which 3 code umbrellas the business is under - this helps to remove outliers.
+The codebase is in python, and used some packages including gensim (word2vec), nltk (nlp) and scikit-learn (tf-idf). Github was also used for version control.
 
 \section{CONCLUSION}
 
@@ -130,6 +123,7 @@ After training, our algorithmic classifier scores $~30\%$ against our hand-class
                                   % sure that you do not shorten the textheight too much.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\ifx
 \newpage
 
 \appendix
@@ -139,11 +133,16 @@ After training, our algorithmic classifier scores $~30\%$ against our hand-class
 \section*{Figure 2}
 \includegraphics[width=0.5\textwidth]{database.png}
 
-\section*{List 1}
+\section*{Scripts}
 \begin{itemize}
-\item get\_business\_latlot.py: generates id\_to\_loc.pickle
+\item get\_business\_latlon.py: generates id\_to\_loc.pickle
 \item get\_business\_types.py: generates business\_types.pickle
 \item get\_naics\_data.py: generates naics\_list.json
+\item merge\_dbs.py: merges app.db's
+\item clean\_business\_types.py: cleans business\_types.pickle
+\item merge\_hand\_classified\_sets.py: merges hand classified sets
+\item generate\_matrices.py: generates matrices from db for vectorized classification
 \end{itemize}
+\fi
 
 \end{document}
