@@ -38,6 +38,8 @@ def getNextUnclassifiedBusiness(unclassified_set, agent):
             raise Exception('Bad agent name')
         if businessExists(next_id):
             return getBusinessWithId(next_id)
+        else:
+            print next_id
     return None
 
 
