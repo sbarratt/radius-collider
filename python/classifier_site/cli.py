@@ -88,21 +88,10 @@ def stochasticgradientdescent():
     id_to_bizid = loader.get_id_to_bizid()
     S = loader.get_S()
 
-    WEIGHTS_DICT = OrderedDict([
-        ('d_d_sim',  0.1),
-        ('d_d_w2vsim', 0.12000000000000001),
-
-        ('d_t_sim', 0.16000000000000003),
-        ('d_t_w2vsim', 0.08),
-
-        ('t_d_sim', 0.18000000000000002),
-        ('t_d_w2vsim', 0.1),
-
-        ('t_t_sim', 0.32),
-        ('t_t_w2vsim', 0.14),
-
-        ('prior', 0.12000000000000001)
-    ])
+    WEIGHTS_DICT = OrderedDict([('d_d_sim', 0.1), ('d_d_w2vsim', 0.12000000000000001), 
+                 ('d_t_sim', 0.16000000000000003), ('d_t_w2vsim', 0.08), 
+                 ('t_d_sim', 0.18000000000000002), ('t_d_w2vsim', 0.1), 
+                 ('t_t_sim', 0.34), ('t_t_w2vsim', 0.14), ('prior', 0.12000000000000001)])
 
     for _ in xrange(10000):
         keys = WEIGHTS_DICT.keys()
@@ -153,7 +142,7 @@ def classifyBusinesses(samples=1):
     from scorers import Classifier
     classifier = Classifier()
 
-    classifcations = classifier.classify()
+    classifcations = classifier.classify(rule_based=True)
     loader.write_rows_algo_classified_set(classifcations)
     predictionScoreOfTrainingSet()
 

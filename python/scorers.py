@@ -116,7 +116,7 @@ class Classifier:
         self.threshhold = threshhold
         print "Threshhold", threshhold
 
-    def classify(self):
+    def classify(self, rule_based = True):
         classifications = []
 
         S = loader.get_S()
@@ -126,7 +126,7 @@ class Classifier:
         for i in xrange(10000):
             bizid = self.row_to_bizid[i]
             code = self.ruleBasedClassification(bizid)
-            if code is None:
+            if code is None or not rule_based:
                 score = np.max(S[i, :])
                 if score > self.threshhold:
                     code = Classifier.column_to_code[np.argmax(S[i, :])]
