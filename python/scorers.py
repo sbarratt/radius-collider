@@ -3,6 +3,31 @@ import loader
 from collections import OrderedDict
 import numpy as np
 from classifier_site.dbHelper import ids_for_query
+from random import shuffle
+
+
+column_to_code = loader.get_index_to_id()
+row_to_bizid = loader.get_id_to_bizid()
+
+
+# ORDER: 'd_d_sim', 'd_d_w2vsim', 'd_t_sim', 'd_t_w2vsim', 't_d_sim', 't_d_w2vsim', 't_t_sim', 't_t_w2vsim', 'prior'
+DEFAULT_WEIGHTS_DICT = OrderedDict([
+    ('d_d_sim',  0.1),
+    ('d_d_w2vsim', 0.12000000000000001),
+
+    ('d_t_sim', 0.16000000000000003),
+    ('d_t_w2vsim', 0.08),
+
+    ('t_d_sim', 0.18000000000000002),
+    ('t_d_w2vsim', 0.1),
+
+    ('t_t_sim', 0.32),
+    ('t_t_w2vsim', 0.14),
+
+    ('prior', 0.12000000000000001)
+])
+
+DEFAULT_THRESHOLD = 1.1
 
 
 class Featurizer:
@@ -72,29 +97,7 @@ class Featurizer:
         return codes_to_features
 
 
-
-# ORDER: 'd_d_sim', 'd_d_w2vsim', 'd_t_sim', 'd_t_w2vsim', 't_d_sim', 't_d_w2vsim', 't_t_sim', 't_t_w2vsim', 'prior'
-DEFAULT_WEIGHTS_DICT = OrderedDict([
-    ('d_d_sim',  0.862052344506),
-    ('d_d_w2vsim', 0.1),
-
-    ('d_t_sim', 0.7694268978),
-    ('d_t_w2vsim', 0.1),
-
-    ('t_d_sim', 1.0),
-    ('t_d_w2vsim', 0.2),
-
-    ('t_t_sim', 1.5),
-    ('t_t_w2vsim', 0.5),
-
-    ('prior', .05)
-])
-
-DEFAULT_THRESHOLD = 1.1
-
 class Classifier:
-    column_to_code = loader.get_index_to_id()
-    row_to_bizid = loader.get_id_to_bizid()
 
     # rule based classification
     ids_with_redbox = ids_for_query('redbox', ['name'])
@@ -124,15 +127,15 @@ class Classifier:
         S = reduce(lambda x, y: x + y, S)
 
         for i in xrange(10000):
-            bizid = self.row_to_bizid[i]
+            bizid = row_to_bizid[i]
             code = self.ruleBasedClassification(bizid)
             if code is None:
                 score = np.max(S[i, :])
                 if score > self.threshhold:
-                    code = Classifier.column_to_code[np.argmax(S[i, :])]
+                    code = column_to_code[np.argmax(S[i, :])]
                 else:
                     code = ''  # no guess
-            classifications.append( (self.row_to_bizid[i], code) )
+            classifications.append( (row_to_bizid[i], code) )
 
         return classifications
 
@@ -162,3 +165,81 @@ class Classifier:
         else:
             return None
 
+
+class StochasticDescent:
+
+
+    def __init__(self, weights_dict=DEFAULT_WEIGHTS_DICT):
+        self.weights_dict = weights_dict
+        self.run()
+
+    def run(self):
+        S = loader.get_S()
+        scorer = Scorer()
+
+        for _ in xrange(10000):
+            keys = self.weights_dict.keys()
+            shuffle(keys)
+            for k in keys:
+
+                sc = -float("inf")
+                best_dev = .02
+                base = self.weights_dict[k]
+                for dev in [.02, 0, -.02]:
+                    self.weights_dict[k] = base + dev
+
+                    w = self.weights_dict.values()
+
+                    S_prime = [Si * wi for Si, wi in zip(S, w)]
+                    S_prime = reduce(lambda x, y: x + y, S_prime)
+                    classifications = []
+                    for i in xrange(10000):
+                        argmax = np.argmax(S_prime[i, :])
+                        ide = column_to_code[argmax]
+                        classifications.append( (row_to_bizid[i], ide) )
+                    loader.write_rows_algo_classified_set(classifications)
+                    pred , total , _  = scorer.scoreClassifications()
+                    score = pred / total
+                    if score > sc:
+                        sc = score
+                        best_dev = dev
+                    print sc
+
+                self.weights_dict[k] = base + best_dev
+                w = self.weights_dict.values()
+
+                S_prime = [Si * wi for Si, wi in zip(S, w)]
+                S_prime = reduce(lambda x, y: x + y, S)
+                classifications = []
+                for i in xrange(10000):
+                    ide = column_to_code[np.argmax(S_prime[i, :])]
+                    classifications.append( (row_to_bizid[i], ide) )
+                loader.write_rows_algo_classified_set(classifications)
+                pred , total , _ = scorer.scoreClassifications()
+                score = pred / total
+                if score > sc:
+                    sc = score
+                    best_dev = dev
+                print sc
+                print self.weights_dict
+
+
+class Scorer:
+
+    def __init__(self):
+        self.hand_classified_set = loader.get_hand_classifiedset()
+        self.algo_classified_set = loader.get_algo_classifiedset()
+
+
+    def scoreClassifications(self):
+        total = 0
+        scores = []
+        for uid, actual in self.hand_classified_set.iteritems():
+            guess = self.algo_classified_set[uid]
+            scores.append(util.score_prediction(guess, actual))
+        total = sum(scores)
+        max_potential = len(self.hand_classified_set.keys()) * 6.0
+        unique, counts = np.unique(scores, return_counts=True)
+        frequencies = np.asarray((unique, counts)).T
+
+        return total, max_potential, frequencies

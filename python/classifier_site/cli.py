@@ -7,11 +7,8 @@ import loader
 from flask.ext.script import Manager
 from app import app
 import util
-import numpy as np
 from multiprocessing import Pool, cpu_count
 import IPython as ipy
-from collections import OrderedDict
-from random import shuffle
 
 manager = Manager(app)
 
@@ -84,66 +81,9 @@ def chunker(seq, size):
 
 @manager.command
 def stochasticgradientdescent():
-    index_to_id = loader.get_index_to_id()
-    id_to_bizid = loader.get_id_to_bizid()
-    S = loader.get_S()
-
-    WEIGHTS_DICT = OrderedDict([
-        ('d_d_sim',  0.1),
-        ('d_d_w2vsim', 0.12000000000000001),
-
-        ('d_t_sim', 0.16000000000000003),
-        ('d_t_w2vsim', 0.08),
-
-        ('t_d_sim', 0.18000000000000002),
-        ('t_d_w2vsim', 0.1),
-
-        ('t_t_sim', 0.32),
-        ('t_t_w2vsim', 0.14),
-
-        ('prior', 0.12000000000000001)
-    ])
-
-    for _ in xrange(10000):
-        keys = WEIGHTS_DICT.keys()
-        shuffle(keys)
-        for k in keys:
-
-            sc = -float("inf")
-            best_dev = .02
-            base = WEIGHTS_DICT[k]
-            for dev in [.02, 0, -.02]:
-                WEIGHTS_DICT[k] = base + dev
-
-                w = WEIGHTS_DICT.values()
-
-                S_prime = [Si * wi for Si, wi in zip(S, w)]
-                S_prime = reduce(lambda x, y: x + y, S_prime)
-                for i in xrange(10000):
-                    argmax = np.argmax(S_prime[i, :])
-                    ide = index_to_id[argmax]
-                    writeClassification(id_to_bizid[i], ide)
-                score = getPredictionScoreOfTrainingSet()
-                if score > sc:
-                    sc = score
-                    best_dev = dev
-                print sc
-
-            WEIGHTS_DICT[k] = base + best_dev
-            w = WEIGHTS_DICT.values()
-
-            S_prime = [Si * wi for Si, wi in zip(S, w)]
-            S_prime = reduce(lambda x, y: x + y, S)
-            for i in xrange(10000):
-                ide = index_to_id[np.argmax(S_prime[i, :])]
-                writeClassification(id_to_bizid[i], ide)
-            score = predictionScoreOfTrainingSet()
-            if score > sc:
-                sc = score
-                best_dev = dev
-            print sc
-            print WEIGHTS_DICT
-
+    # late import
+    from scorers import StochasticDescent
+    StochasticDescent()
 
 
 @manager.option('-s', '--samples', dest='samples', help='Numbers of random weight samples', required=False)
@@ -160,20 +100,16 @@ def classifyBusinesses(samples=1):
 
 @manager.command
 def predictionScoreOfTrainingSet():
-    hand_classified_set = loader.get_hand_classifiedset()
-    algo_classified_set = loader.get_algo_classifiedset()
-    total = 0
-    scores = []
-    for uid, actual in hand_classified_set.iteritems():
-        guess = algo_classified_set[uid]
-        scores.append(util.score_prediction(guess, actual))
-    total = sum(scores)
-    max_potential = len(hand_classified_set.keys()) * 6.0
+    # late import
+    from scorers import Scorer
+    scorer = Scorer()
+
+    total, max_potential, frequencies = scorer.scoreClassifications()
+
     print "Score: ", total
     print "Total: ", max_potential
     print "%: ", total / float(max_potential)
-    unique, counts = np.unique(scores, return_counts=True)
-    print "Frequencies: \n", np.asarray((unique, counts)).T
+    print "Frequencies: \n", frequencies
 
 
 def getPredictionScoreOfTrainingSet():
