@@ -73,7 +73,7 @@ To further understand the structure of the data and the quality of our classifie
 
 \section{TECHNICAL MODELING DETAILS}
 
-Let the set of businesses be denoted by $\{b_1,b_2,\dots,b_n\}$ and the set of NAICS codes by $\{c_1,c_2,\dots,c_m\}$. The algorithm attempts to construct a similarity matrix $\matr{S}$ of dimension $n$x$m$ where $\matr{S}_{i,j}$ denotes the similarity between business $i$ and NAICS code $j$. The classification for business (row) $i$ is $\argmax_{1 \leq j \leq m} \matr{S}_{i,j}$, the most similar NAICS code to that business. To construct this matrix, we first construct 9 similarity matrices, $\{\matr{S}_1,\matr{S}_2,\dots,\matr{S}_8\}$ with the same dimension. There are 4 ways to pair the business[.name .description] and NAICS[.title .description]. So the \textit{tf-idf} cosine similarity and \textit{word2vec} cosine similarity between these 4 combinations as well as a similarity matrix of 2-digit industry priors (independent of the business) constitute the 9 similarity matrices. The final similarity matrix is a convex combination of the preliminaries: \[ \matr{S} = \sum_{i=1}^9 w_i \matr{S}_i, \]
+Let the set of businesses be denoted by $\{b_1,b_2,\dots,b_n\}$ and the set of NAICS codes by $\{c_1,c_2,\dots,c_m\}$. The algorithm attempts to construct a similarity matrix $\matr{S}$ of dimension $n$x$m$ where $\matr{S}_{i,j}$ denotes the similarity between business $i$ and NAICS code $j$. The classification for business (row) $i$ is $\argmax_{1 \leq j \leq m} \matr{S}_{i,j}$, the most similar NAICS code to that business. To construct this matrix, we first construct 9 similarity matrices, $\{\matr{S}_1,\matr{S}_2,\dots,\matr{S}_9\}$ with the same dimension. There are 4 ways to pair the business (B) and NAICS (N) $\rightarrow$ \{(B.name, B.description) X (N.name, N.description)\}. Therefore, the two similarity methods, \textit{tf-idf} cosine similarity and \textit{word2vec} cosine similarity, with these 4 text combinations as well as a similarity matrix of 2-digit industry priors (independent of the business) constitute the 9 similarity matrices. The final similarity matrix is a convex combination of the preliminaries: \[ \matr{S} = \sum_{i=1}^9 w_i \matr{S}_i, \]
 
 where $\sum_{i=1}^9 w_i=1$. The weights were selected through random hyper-parameter search \cite{random}.
 
@@ -85,7 +85,7 @@ where $\sum_{i=1}^9 w_i=1$. The weights were selected through random hyper-param
 
 \subsection{Results}
 
-After training, our algorithmic classifier scores 18.5 \%. We hand-classified 1000 businesses.
+After training, our algorithmic classifier scores $~30\%$ against our hand-classified 1000 businesses.
 
 \subsection{Confidence in our Predictions}
 
@@ -94,9 +94,11 @@ After training, our algorithmic classifier scores 18.5 \%. We hand-classified 10
 \end{itemize}
 
 
-\subsection{Limitations}
+\subsection{Limitations / Unexplored Ideas}
 \begin{itemize}
-\item The algorithm did not take into account the hierarchical structure of the NAICS codes.
+\item The algorithm did not take into account the hierarchical structure of the NAICS codes. We believe this could help the score by determing the marginal expected value for each additional digit.
+\item The algorithm did not take into account the hierarchical structure of the NAICS codes. We believe this could help the score by determing the marginal expected value for each additional digit.
+\item Collecting data was pretty limited, but if possible to gather the approximate amount of revenue and/or costs coming from a business, it would be helpful in narrowing down the correct NAICS industry.
 \end{itemize}
 
 \subsection{Challenges}
