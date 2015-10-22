@@ -36,6 +36,9 @@ def dropdb():
 
 @manager.command
 def restartDb():
+    """
+    Restarts the database.
+    """
     dropdb()
     initdb()
 
@@ -43,7 +46,7 @@ def restartDb():
 @manager.command
 def ipyDebug():
     """
-    for testing
+    Function for testing.
     """
     ipy.embed()
 
@@ -143,8 +146,9 @@ def classifyBusinesses(samples=1):
     classifier = Classifier()
 
     classifcations = classifier.classify(rule_based=True)
-    loader.write_rows_algo_classified_set(classifcations)
-    predictionScoreOfTrainingSet()
+    print 1
+    # loader.write_rows_algo_classified_set(classifcations)
+    # predictionScoreOfTrainingSet()
 
 
 @manager.command
