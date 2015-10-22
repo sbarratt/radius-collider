@@ -119,13 +119,31 @@ class Classifier:
         ('insurance', 524210, nb),
         ('dentist', 621210, nbd),
         ('dental', 621210, nbd),
+        # ('physician', 621111, nbd),
+        ('apartment', 531110, nbd),
+        (' apt', 531110, nb),
         ('bank', 52, b),
-        ('car%repair', 811111, nb),
+        ('car_repair', 811111, nb),
+        ('real_estate', 531210, nb),
+        ('loan', 522310, nb),
+        ('mortgage', 522310, nb),
+        ('auto_repair', 811111, nb),
+        # ('investment', 523930, nb),
+        ('cemeter', 812220, nbd), # cemetary
+        ('church', 813110, nb),
+        ('florist', 453110, nbd),
+        ('floral', 453110, nbd),
+        ('car_wash', 811192, nb),
         ('landscap', 561730, nb),
+        ('lawn', 561730, nb),
+        ('laundromat', 812310, nbd),
         ('locksmith', 561622, nb),
         ('hotel', 721110, nb),
         ('motel', 721110, nb),
-        ('photo', 541921, nb)
+        ('photo', 541921, nb),
+        ('gas', 447110, nb),
+        # ('post_office', 491110, nbd),
+        # ('jewelry', 448310, nbd)
     ]
     rule_based = []
     for word, code, attribute_list in rule_words:
