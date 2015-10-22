@@ -1,3 +1,9 @@
+#!/usr/bin/env python
+
+"""
+Merge hand classifications
+"""
+
 import csv, os
 
 DATA_DIR = os.path.dirname(os.path.dirname(

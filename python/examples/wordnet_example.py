@@ -1,5 +1,6 @@
-"""
-Example of Wordnet.
+#!/usr/bin/env python
+
+""" Example of Wordnet.
 Type in two words and get the similarity between them
 
 In short, WordNet is a database of English words that are linked together by

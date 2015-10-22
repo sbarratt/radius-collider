@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 from db import db
 from models import Business
 from sqlalchemy import or_

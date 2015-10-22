@@ -1,3 +1,9 @@
+#!/usr/bin/env python
+
+"""
+Generates matrices from app.db for fast classification.
+"""
+
 import pickle
 import numpy as np
 

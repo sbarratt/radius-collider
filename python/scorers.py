@@ -1,3 +1,9 @@
+#!/usr/bin/env python
+
+"""Scorers
+Classes for featurizing and classifying data points.
+"""
+
 import util
 import loader
 from collections import OrderedDict
@@ -184,7 +190,9 @@ class Classifier:
 
 
 class StochasticDescent:
-
+    """
+    Tries to find optimal weights through random weight pertubation.
+    """
 
     def __init__(self, weights_dict=DEFAULT_WEIGHTS_DICT):
         self.weights_dict = weights_dict
@@ -242,7 +250,10 @@ class StochasticDescent:
 
 
 class Scorer:
-
+    """
+    Scores classifications.
+    """
+    
     def __init__(self):
         self.hand_classified_set = loader.get_hand_classifiedset()
         self.algo_classified_set = loader.get_algo_classifiedset()

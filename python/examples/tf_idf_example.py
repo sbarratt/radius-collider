@@ -1,3 +1,9 @@
+#!/usr/bin/env python
+
+"""Example of TFIDF in Python
+This script demonstrates TFIDF cosine similarity in python.
+"""
+
 import nltk
 import string
 from sklearn.feature_extraction.text import TfidfVectorizer

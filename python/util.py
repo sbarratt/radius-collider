@@ -1,3 +1,9 @@
+#!/usr/bin/env python
+
+"""Utilities
+File with various useful functions.
+"""
+
 from os import sys, path
 
 sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))

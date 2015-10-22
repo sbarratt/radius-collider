@@ -1,3 +1,9 @@
+#!/usr/bin/env python
+
+"""Module for loading data.
+Various files in this codebase import this file to load data.
+"""
+
 import json
 import csv
 import pickle

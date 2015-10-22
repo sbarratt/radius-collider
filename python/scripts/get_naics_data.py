@@ -1,7 +1,7 @@
-"""
-python/get_naics_data.py
+#!/usr/bin/env python
 
-Script to dump descriptions from CodeForAmerica NAICS API into ../naics_list.json
+"""
+Gets NAICS Data from NAICS CodeForAmerica API.
 """
 
 from os import sys, path

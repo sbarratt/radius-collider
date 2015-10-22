@@ -1,6 +1,6 @@
-"""
-python/get_business_types.py
+#!/usr/bin/env python
 
+"""
 Script to get businesses types from their lat lon
 """
 

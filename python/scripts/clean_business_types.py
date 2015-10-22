@@ -1,3 +1,9 @@
+#!/usr/bin/env python
+
+"""Cleans business types.
+Removes common words that add no description.
+"""
+
 from os import sys, path
 
 sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))

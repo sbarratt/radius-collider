@@ -1,5 +1,9 @@
 #!/usr/bin/env python
 
+"""
+Command-line interface to the classification pipeline.
+"""
+
 from os import sys, path
 
 sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
