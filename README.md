@@ -13,6 +13,10 @@ python
 python classifier_site/app.py
 ```
 
+## Downloading the data
+
+Download files under classification/ from [here](goo.gl/Sei2jU)
+
 ## Endpoints
 `/agents`:
 
