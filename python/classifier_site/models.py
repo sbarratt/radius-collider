@@ -3,8 +3,18 @@ from os import sys, path
 sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
 from db import db
 import util
-from scorers import TfidfScorer
+import bisect
 
+DEFAULT_WIEGHTS_DICT = {
+    'd_d_sim': .1,
+    't_t_sim': .2,
+    'd_t_sim': .1,
+    't_d_sim': .1,
+    't_t_w2vsim': .5,
+    'd_d_w2vsim': .2,
+    'd_t_w2vsim': .2,
+    't_d_w2vsim': .2
+}
 
 class Business(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -26,7 +36,14 @@ class Business(db.Model):
         self.features_dict = features_dict
 
     def getSixCodeGuesses(self):
-        return TfidfScorer().score_business(self)
+        """
+        :return: the sum of each feature multiplied by its weight
+        """
+        l = []
+        for naics_code, features in self.features_dict.iteritems():
+            score = sum([DEFAULT_WIEGHTS_DICT[k] * features[k] for k in features.keys()])
+            bisect.insort(l, (score, naics_code))
+        return l[::-1]
 
     def getThreeCodeBuckets(self):
         return util.bucket_guesses(self.getSixCodeGuesses())

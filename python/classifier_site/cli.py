@@ -5,17 +5,13 @@ from db import db
 import dbHelper as dbh
 import loader
 from flask.ext.script import Manager
-from models import Business
 from app import app
-from scorers import Featurizer
 import util
 import numpy as np
 from multiprocessing import Pool, cpu_count
 import IPython as ipy
-from sqlalchemy import or_
 from collections import OrderedDict
 from random import shuffle
-import re
 
 manager = Manager(app)
 
@@ -59,6 +55,8 @@ def loadBusinesses(chunk, num_processes=None):
     num_processes = int(num_processes) if num_processes else cpu_count()
     total = len(businesses)
     global featurizer
+    # late import
+    from scorers import Featurizer
     featurizer = Featurizer()
 
     pool = Pool(processes=num_processes)
@@ -151,101 +149,13 @@ def stochasticgradientdescent():
 @manager.option('-s', '--samples', dest='samples', help='Numbers of random weight samples', required=False)
 def classifyBusinesses(samples=1):
     samples = int(samples)
-    # ORDER: 'd_d_sim', 'd_d_w2vsim', 'd_t_sim', 'd_t_w2vsim', 't_d_sim', 't_d_w2vsim', 't_t_sim', 't_t_w2vsim', 'prior'
-    WEIGHTS_DICT = OrderedDict([
-        ('d_d_sim',  0.862052344506),
-        ('d_d_w2vsim', 0.1),
+    # late import
+    from scorers import Classifier
+    classifier = Classifier()
 
-        ('d_t_sim', 0.7694268978),
-        ('d_t_w2vsim', 0.1),
-
-        ('t_d_sim', 1.0),
-        ('t_d_w2vsim', 0.2),
-
-        ('t_t_sim', 1.5),
-        ('t_t_w2vsim', 0.5),
-
-        ('prior', .05)
-
-        # ('t_t_w2vsim', 0.5),
-        # ('d_d_w2vsim', 0.1),
-        # ('d_t_w2vsim', 0.1),
-        # ('t_d_w2vsim', 0.2),
-    ])
-    # THRESHOLDS = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0, 1.1, 1.2]
-    THRESHOLD = 1.1
-
-    # buzz words
-    ids_with_redbox = ids_for_query('redbox', ['name'])
-    ids_with_restaurant = ids_for_query('restaurant', ['name', 'business_type', 'description'])
-    ids_with_vet = ids_for_query('veterinary', ['name', 'business_type', 'description'])
-    ids_with_insurance = ids_for_query('insurance', ['name', 'business_type'])
-    ids_with_dentist = ids_for_query('dentist', ['name', 'business_type', 'description']) \
-        + ids_for_query('dental', ['name', 'business_type', 'description'])
-    ids_with_bank = ids_for_query('bank', ['business_type'])
-    ids_with_car_repair = ids_for_query('car%repair', ['name', 'business_type'])
-    ids_with_landscaping = ids_for_query('landscap', ['name', 'business_type'])
-    ids_with_locksmith = ids_for_query('locksmith', ['name', 'business_type'])
-    ids_with_hotel = ids_for_query('hotel', ['name', 'business_type']) \
-        + ids_for_query('motel', ['name', 'business_type'])
-    ids_with_photo = ids_for_query('photo', ['name', 'business_type'])
-
-    for _ in xrange(samples):
-        print THRESHOLD
-        # d_d_sim = random.random()
-        # t_t_sim = 1.5
-        # d_t_sim = random.random()
-        # t_d_sim = 1.0
-        # WEIGHTS_DICT = {
-        #    'd_d_sim': d_d_sim,
-        #    't_t_sim': t_t_sim,
-        #    'd_t_sim': d_t_sim,
-        #    't_d_sim': t_d_sim,
-        #    't_t_w2vsim': 0.0,
-        #    'd_d_w2vsim': 0.0,
-        #    'd_t_w2vsim': 0.0,
-        #    't_d_w2vsim': 0.0
-        # }
-        column_to_code = loader.get_index_to_id()
-        row_to_bizid = loader.get_id_to_bizid()
-        S = loader.get_S()
-
-        S = [Si * wi for Si, wi in zip(S, WEIGHTS_DICT.values())]
-        S = reduce(lambda x, y: x + y, S)
-        for i in xrange(10000):
-            bizid = row_to_bizid[i]
-            if bizid in ids_with_redbox:
-                code = 532230
-            elif bizid in ids_with_restaurant:
-                code = 72251
-            elif bizid in ids_with_vet:
-                code = 541940
-            elif bizid in ids_with_insurance:
-                code = 524210
-            elif bizid in ids_with_dentist:
-                code = 621210
-            elif bizid in ids_with_bank:
-                code = 52
-            elif bizid in ids_with_car_repair:
-                code = 811111
-            elif bizid in ids_with_landscaping:
-                code = 561730
-            elif bizid in ids_with_locksmith:
-                code = 561622
-            elif bizid in ids_with_hotel:
-                code = 721110
-            elif bizid in ids_with_photo:
-                code = 541921
-            else:
-                code = column_to_code[np.argmax(S[i, :])]
-                score = np.max(S[i, :])
-                if score > THRESHOLD:
-                    code = column_to_code[np.argmax(S[i, :])]
-                else:
-                    code = ''  # no guess
-            writeClassification(row_to_bizid[i], code)
-        # print d_d_sim, t_t_sim, d_t_sim, t_d_sim
-        predictionScoreOfTrainingSet()
+    classifcations = classifier.classify()
+    loader.write_rows_algo_classified_set(classifcations)
+    predictionScoreOfTrainingSet()
 
 
 @manager.command
@@ -282,15 +192,6 @@ def getPredictionScoreOfTrainingSet():
 def writeClassification(business_uid, naics_code):
     loader.write_row_algo_classified_set(business_uid, naics_code)
 
-
-def ids_for_query(string, attributes):
-    regex = '%{}%'.format(string)
-    conditions = [getattr(Business, attr).ilike(regex) for attr in attributes]
-    condition = or_(*conditions)
-    ids = db.session.query(Business.unique_id).filter(condition).all()
-    if len(ids) == 0:
-        return []
-    return list(zip(*ids)[0])
 
 if __name__ == "__main__":
     naics_items = loader.get_naics_data_for_level(6)

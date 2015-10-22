@@ -1,5 +1,6 @@
 from db import db
 from models import Business
+from sqlalchemy import or_
 
 
 def addBusiness(business, business_type, features_dict):
@@ -38,3 +39,13 @@ def getNextUnclassifiedBusiness(unclassified_set, agent):
         if businessExists(next_id):
             return getBusinessWithId(next_id)
     return None
+
+
+def ids_for_query(string, attributes):
+    regex = '%{}%'.format(string)
+    conditions = [getattr(Business, attr).ilike(regex) for attr in attributes]
+    condition = or_(*conditions)
+    ids = db.session.query(Business.unique_id).filter(condition).all()
+    if len(ids) == 0:
+        return []
+    return list(zip(*ids)[0])

@@ -234,6 +234,11 @@ def write_row_algo_classified_set(business_uid, naics_code):
         wr = csv.writer(algo_classified_set)
         wr.writerow((business_uid, naics_code))
 
+def write_rows_algo_classified_set(rows):
+    with open(DATA_DIR + 'algo_classified_set.csv', 'a') as algo_classified_set:
+        wr = csv.writer(algo_classified_set)
+        for business_uid, naics_code in rows:
+            wr.writerow((business_uid, naics_code))
 
 def get_id_to_index():
     return pickle.load(open(DATA_DIR + "classification/id_to_index.pickle", "r"))
