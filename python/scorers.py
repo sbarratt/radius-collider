@@ -5,7 +5,7 @@ import numpy as np
 from classifier_site.dbHelper import ids_for_query
 from random import shuffle
 
-
+# mapping from matrix elements to codes and business ids
 column_to_code = loader.get_index_to_id()
 row_to_bizid = loader.get_id_to_bizid()
 
@@ -31,6 +31,9 @@ DEFAULT_THRESHOLD = 0.0
 
 
 class Featurizer:
+    """
+    Creates tf-idf and word2vec similarties for each text combination
+    """
 
     def __init__(self):
         self.google_types = loader.get_business_types()
@@ -98,21 +101,54 @@ class Featurizer:
 
 
 class Classifier:
+    """
+    Classifies businesses to codes, assigns a unique code
+    """
 
-    # rule based classification
-    ids_with_redbox = ids_for_query('redbox', ['name'])
-    ids_with_restaurant = ids_for_query('restaurant', ['name', 'business_type', 'description'])
-    ids_with_vet = ids_for_query('veterinary', ['name', 'business_type', 'description'])
-    ids_with_insurance = ids_for_query('insurance', ['name', 'business_type'])
-    ids_with_dentist = ids_for_query('dentist', ['name', 'business_type', 'description']) \
-        + ids_for_query('dental', ['name', 'business_type', 'description'])
-    ids_with_bank = ids_for_query('bank', ['business_type'])
-    ids_with_car_repair = ids_for_query('car%repair', ['name', 'business_type'])
-    ids_with_landscaping = ids_for_query('landscap', ['name', 'business_type'])
-    ids_with_locksmith = ids_for_query('locksmith', ['name', 'business_type'])
-    ids_with_hotel = ids_for_query('hotel', ['name', 'business_type']) \
-        + ids_for_query('motel', ['name', 'business_type'])
-    ids_with_photo = ids_for_query('photo', ['name', 'business_type'])
+    # business attribute levels
+    n = ['name']
+    b = ['business_type']
+    nb = ['name', 'business_type']
+    nbd = ['name', 'business_type', 'description']
+
+    # ids for rule based classification
+    rule_words = [
+        ('redbox', 532230, n),
+        ('restaurant', 72251, nbd),
+        ('veterinary', 541940, nbd),
+        ('insurance', 524210, nb),
+        ('dentist', 621210, nbd),
+        ('dental', 621210, nbd),
+        # ('physician', 621111, nbd),
+        ('apartment', 531110, nbd),
+        (' apt', 531110, nb),
+        ('bank', 52, b),
+        ('car_repair', 811111, nb),
+        ('real_estate', 531210, nb),
+        ('loan', 522310, nb),
+        ('mortgage', 522310, nb),
+        ('auto_repair', 811111, nb),
+        # ('investment', 523930, nb),
+        ('cemeter', 812220, nbd), # cemetary
+        ('church', 813110, nb),
+        ('florist', 453110, nbd),
+        ('floral', 453110, nbd),
+        ('car_wash', 811192, nb),
+        ('landscap', 561730, nb),
+        ('lawn', 561730, nb),
+        ('laundromat', 812310, nbd),
+        ('locksmith', 561622, nb),
+        ('hotel', 721110, nb),
+        ('motel', 721110, nb),
+        ('photo', 541921, nb),
+        ('gas', 447110, nb),
+        # ('post_office', 491110, nbd),
+        # ('jewelry', 448310, nbd)
+    ]
+    rule_based = []
+    for word, code, attribute_list in rule_words:
+        ids = ids_for_query(word, attribute_list)
+        rule_based.append( (ids, code) )
 
     def __init__(self, weights_dict=DEFAULT_WEIGHTS_DICT, threshhold=DEFAULT_THRESHOLD):
         self.weights_dict = weights_dict
@@ -140,28 +176,9 @@ class Classifier:
         return classifications
 
     def ruleBasedClassification(self, bizid):
-        if bizid in self.ids_with_redbox:
-            return 532230
-        elif bizid in self.ids_with_restaurant:
-            return 72251
-        elif bizid in self.ids_with_vet:
-            return 541940
-        elif bizid in self.ids_with_insurance:
-            return 524210
-        elif bizid in self.ids_with_dentist:
-            return 621210
-        elif bizid in self.ids_with_bank:
-            return 52
-        elif bizid in self.ids_with_car_repair:
-            return 811111
-        elif bizid in self.ids_with_landscaping:
-            return 561730
-        elif bizid in self.ids_with_locksmith:
-            return 561622
-        elif bizid in self.ids_with_hotel:
-            return 721110
-        elif bizid in self.ids_with_photo:
-            return 541921
+        for ids, code in self.rule_based:
+            if bizid in ids:
+                return code
         else:
             return None
 

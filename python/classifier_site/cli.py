@@ -89,10 +89,8 @@ def stochasticgradientdescent():
     from scorers import StochasticDescent
     StochasticDescent()
 
-
-@manager.option('-s', '--samples', dest='samples', help='Numbers of random weight samples', required=False)
-def classifyBusinesses(samples=1):
-    samples = int(samples)
+@manager.command
+def classifyBusinesses():
     # late import
     from scorers import Classifier
 
