@@ -9,6 +9,7 @@ from app import app
 import util
 from multiprocessing import Pool, cpu_count
 import IPython as ipy
+import numpy as np
 
 manager = Manager(app)
 
@@ -91,11 +92,12 @@ def classifyBusinesses(samples=1):
     samples = int(samples)
     # late import
     from scorers import Classifier
-    classifier = Classifier()
 
-    classifcations = classifier.classify()
-    loader.write_rows_algo_classified_set(classifcations)
-    predictionScoreOfTrainingSet()
+    for thresh in np.arange(0, .6, .05):
+        classifier = Classifier(threshhold=thresh)
+        classifcations = classifier.classify()
+        loader.write_rows_algo_classified_set(classifcations)
+        predictionScoreOfTrainingSet()
 
 
 @manager.command

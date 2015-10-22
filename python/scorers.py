@@ -27,7 +27,7 @@ DEFAULT_WEIGHTS_DICT = OrderedDict([
     ('prior', 0.12000000000000001)
 ])
 
-DEFAULT_THRESHOLD = 1.1
+DEFAULT_THRESHOLD = 0.0
 
 
 class Featurizer:
