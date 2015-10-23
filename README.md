@@ -8,7 +8,9 @@ The NAICS Classifier consists of an **assisted classifier** and a **database vie
 
 ## Downloading the classification matrices
 
-Download *.npy under classification/ from [here](goo.gl/Sei2jU)
+Download *.npy under classification/ from [here](http://www.goo.gl/Sei2jU) and put them in the data/classification/ folder.
+
+Download app.db from [here](http://www.goo.gl/Sei2jU) and put it in python/classifier_site/.
 
 ## Running the server
 ```bash
