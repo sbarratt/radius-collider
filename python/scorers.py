@@ -20,16 +20,12 @@ row_to_bizid = loader.get_id_to_bizid()
 DEFAULT_WEIGHTS_DICT = OrderedDict([
     ('d_d_sim',  0.1),
     ('d_d_w2vsim', 0.12000000000000001),
-
     ('d_t_sim', 0.16000000000000003),
     ('d_t_w2vsim', 0.08),
-
     ('t_d_sim', 0.18000000000000002),
     ('t_d_w2vsim', 0.1),
-
     ('t_t_sim', 0.32),
     ('t_t_w2vsim', 0.14),
-
     ('prior', 0.12000000000000001)
 ])
 
@@ -128,7 +124,7 @@ class Classifier:
         # ('physician', 621111, nbd),
         ('apartment', 531110, nbd),
         (' apt', 531110, nb),
-        ('bank', 52, b),
+        ('bank', 522110, b),
         ('car_repair', 811111, nb),
         ('real_estate', 531210, nb),
         ('loan', 522310, nb),
@@ -161,7 +157,7 @@ class Classifier:
         self.threshhold = threshhold
         print "Threshhold", threshhold
 
-    def classify(self, rule_based = True):
+    def classify(self, implement_rules = True):
         classifications = []
 
         S = loader.get_S()
@@ -171,7 +167,7 @@ class Classifier:
         for i in xrange(10000):
             bizid = row_to_bizid[i]
             code = self.ruleBasedClassification(bizid)
-            if code is None or not rule_based:
+            if code is None or not implement_rules:
                 score = np.max(S[i, :])
                 if score > self.threshhold:
                     code = column_to_code[np.argmax(S[i, :])]
@@ -253,7 +249,7 @@ class Scorer:
     """
     Scores classifications.
     """
-    
+
     def __init__(self):
         self.hand_classified_set = loader.get_hand_classifiedset()
         self.algo_classified_set = loader.get_algo_classifiedset()

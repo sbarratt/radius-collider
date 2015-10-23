@@ -111,7 +111,7 @@ def classifyBusinesses():
 
     for thresh in np.arange(0, .6, .05):
         classifier = Classifier(threshhold=thresh)
-        classifcations = classifier.classify(rule_based=True)
+        classifcations = classifier.classify(implement_rules=True)
         loader.write_rows_algo_classified_set(classifcations)
         predictionScoreOfTrainingSet()
 

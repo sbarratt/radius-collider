@@ -1,5 +1,7 @@
 # Business NAICS Classifier
 
+Link to github repo: https://github.com/sbarratt/radius-collider
+
 The NAICS Classifier consists of an **assisted classifier** and a **database viewer** to see the scores assigned to each business, as well as a CLI to score each business and assign it a NAICS code.
 
 ## Running the server
@@ -47,7 +49,6 @@ Methods:
     + *chunk*: choose the chunk of all businesses [0, 1, 2]
     + *processes*: specify number of processes to use
 - `classifyBusinessWithScorer`: classifies businesses to a unique NAICS code naively
-- `classifyBusinessFast`: classifies businesses to a unique NAICS code using Matrix algebra
 - `predictionScoreOfTrainingSet`: Scores the alogrithm's prediction
 
 

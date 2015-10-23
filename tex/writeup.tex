@@ -46,31 +46,30 @@ Radius Collider Submission - The Approximators
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{INTRODUCTION}
 
-The North American Industry Classification System (NAICS) is the standard used by Federal statistical agencies in classifying business establishments 
-
-The goal of this project was to determine the best North American Industry Classification System (NAICS) code, for a business based on its name, address, description, and website. For example, a Safeway would be classified as the code 445110 (Supermarkets and Other Grocery, except Grocery). To solve this problem, we incorporated several techniques from a variety of fields: text cleaning, data augmentation, tf-idf, wordnet, neural word embeddings and cross-validation. A pure supervised learner would be tough to model/train as there are less training data points than classes, so we went with what one could call a 'topic modeling' and 'rule based' approach.
+The goal of this project was to determine the best North American Industry Classification System (NAICS) code, for a business based on its name, address, description, and website. The North American Industry Classification System (NAICS) is the standard used by Federal statistical agencies in classifying business establishments. For example, a Safeway would be classified as the code 445110 (Supermarkets and Other Grocery, except Grocery). To solve this problem, we incorporated several techniques from a variety of fields: text cleaning, data augmentation, tf-idf, wordnet, neural word embeddings and cross-validation. A pure supervised learner would be tough to model/train as there are less training data points than classes, so we went with what one could call a 'topic modeling' and 'rule based' approach.
 
 \section{DATA}
 
-To increase the amount of data on businesses and NAICS codes, we aggregated some data from public APIs including Google Places business type, NAICS code titles/descriptions, and NAICS code freqeuncies. The respective scripts are listed in List 1 in the appendix.
-
-We also performed transformed the data: stripped stop words, lemmatized, lowercased, tokenized. We did this to normalize the text for comparisons. We also enhanced the richness of the text by adding synonyms obtained through the WordNet model \cite{wordnet}.
+To increase the amount of data on businesses and NAICS codes, we aggregated some data from public APIs including Google Places business type, NAICS code titles/descriptions, and NAICS code freqeuncies. The respective scripts are listed in List 1 in the appendix. We also transformed the data to normalize the text for comparisons: stripped stop words, lemmatized, lowercased, tokenized. We also enhanced the richness of the text by adding synonyms obtained through the WordNet model \cite{wordnet}.
 
 \section{WEB APP}
 
 \subsection{Assisted Hand Classifier}
 
-To ease the painful process of hand-classification, we built a web application in Flask/Python that displays information about the business to be classified and a list of NAICS codes sorted by a preliminary algorithm's scoring function. This allowed more interactive classification - that is automatically written to a file. This greatly sped up hand-classifying 1,000 businesses. Refer to Figure 1 of the appendix.
+To ease the painful process of hand-classification, we built a web application in the flask framework for python that has a nice user interface for classifying businesses. This allowed classifications to be automatically written to a file. It greatly sped up hand-classifying 1,000 businesses. Refer to the README/github for pictures.
 
 \subsection{Database View and Code Comparison}
 
-To further understand the structure of the data and the quality of our classifier, we also built an additional endpoint to read the hand-classification and algorithm-classification databases. It displays a table of businesses with our hand-classification and algorithm-classification so that we could discern what we got it wrong and why. Refer to Figure 2 of the Appendix.
+To further understand the structure of the data and the quality of our classifier, we also built an additional endpoint to visualize some of the classifications the algorithm made with respect to our hand classifications. It allows us to discern what needs to be improved in the algorithm. Refer to the README/github for pictures.
 
 \section{The Algorithm}
 
-Let the set of businesses be denoted by $\{b_1,b_2,\dots,b_n\}$ and the set of NAICS codes by $\{c_1,c_2,\dots,c_m\}$. The algorithm attempts to construct a similarity matrix $\matr{S}$ of dimension $n$x$m$ where $\matr{S}_{i,j}$ denotes the similarity between business $i$ and NAICS code $j$. The classification for business (row) $i$ is $\argmax_{1 \leq j \leq m} \matr{S}_{i,j}$, the most similar NAICS code to that business. To construct this matrix, we first construct 9 similarity matrices, $\{\matr{S}_1,\matr{S}_2,\dots,\matr{S}_9\}$ with the same dimension. There are 4 ways to pair the business (B) and NAICS (N) $\rightarrow$ \{(B.name, B.description) X (N.name, N.description)\}. Therefore, the two similarity methods, \textit{tf-idf} cosine similarity \cite{tfidf} and \textit{word2vec} cosine similarity \cite{neural}, with these 4 text combinations as well as a similarity matrix of 2-digit industry priors (independent of the business) constitute the 9 similarity matrices. The final similarity matrix is a convex combination of the preliminaries: \[ \matr{S} = \sum_{i=1}^9 w_i \matr{S}_i, \]
+Let the set of businesses be denoted by $\{b_1,b_2,\dots,b_n\}$ and the set of NAICS codes by $\{c_1,c_2,\dots,c_m\}$. The algorithm attempts to construct a similarity matrix $\matr{S}$ of dimension $n$x$m$ where $\matr{S}_{i,j}$ denotes the similarity between business $i$ and NAICS code $j$. The classification for business (row) $i$ is $\argmax_{1 \leq j \leq m} \matr{S}_{i,j}$, the most similar NAICS code to that business. To construct this matrix, we first construct 9 similarity matrices, $\{\matr{S}_1,\matr{S}_2,\dots,\matr{S}_9\}$, derived from different similarity measures between a business and a NAICS code. There are 4 ways to pair text related to the business the business (B) and NAICS (N) $\rightarrow$ \{(B.name, B.description) X (N.name, N.description)\}. Therefore, the two similarity methods, \textit{tf-idf} cosine similarity \cite{tfidf} and \textit{word2vec} cosine similarity \cite{neural} as well as a similarity matrix of 2-digit industry priors (independent of the business) constitute the 9 similarity matrices. The final similarity matrix is a convex combination of the preliminaries: $ \matr{S} = \sum_{i=1}^9 w_i \matr{S}_i, $
 
-where $\sum_{i=1}^9 w_i=1$. The weights were selected through random hyper-parameter search \cite{random}.
+where $\sum_{i=1}^9 w_i=1$. The weights were selected through random hyper-parameter search \cite{random}. Again, the algorithm classifies businesses based on 
+$f(b_i) = \argmax_{1 \leq j \leq m} \matr{S}_{i,j}.$
+
+As well as this brute-force similarity approach, we also implemented rule-based classification for common phrases that occur in the title or description. For example, any businesss that mentions restaurant is automatically classified as 72251 (Restaurants and other eating places), because there are rarely false positives in this case. On top of this, we also implemented thresholding. If the highest similarity metric between a business and the codes is below a threshold, the algorithm will not classify the business.
 
 The codebase is in python, and used some packages including gensim (word2vec), nltk (nlp) and scikit-learn (tf-idf). Github was also used for version control.
 
@@ -78,18 +77,12 @@ The codebase is in python, and used some packages including gensim (word2vec), n
 
 \subsection{Results}
 
-After training, our algorithmic classifier scores $~30\%$ against our hand-classified 1000 businesses.
+After training, our algorithmic classifier scores $~31\%$ against our hand-classified 1000 businesses.
 
-\subsection{Confidence in our Predictions}
+\subsection{Confidence, Limitations and Unexplored Ideas}
 
 \begin{itemize}
 \item We are not particularly confident in the predictions our algorithm made, as it has lots of false-positives.
-\end{itemize}
-
-
-\subsection{Limitations / Unexplored Ideas}
-\begin{itemize}
-\item The algorithm did not take into account the hierarchical structure of the NAICS codes. We believe this could help the score by determing the marginal expected value for each additional digit.
 \item The algorithm did not take into account the hierarchical structure of the NAICS codes. We believe this could help the score by determing the marginal expected value for each additional digit.
 \item Collecting data was pretty limited, but if possible to gather the approximate amount of revenue and/or costs coming from a business, it would be helpful in narrowing down the correct NAICS industry.
 \end{itemize}
@@ -97,7 +90,7 @@ After training, our algorithmic classifier scores $~30\%$ against our hand-class
 \subsection{Challenges}
 \begin{itemize}
 
-\item The data did not come perfectly formatted and sometimes the title, description, website did not actually match and was a mix of 2 businesses.
+\item The data did not come perfectly formatted and sometimes the title, description or website did match and was a mix of 2 businesses.
 \item Some of the businesses had names and descriptions in other languages.
 \item Some businesses have multiple obvious classifications making it difficult to assign a single NAICS code (\textit{e.g.} a bakery which also is a sit-down restaurant).
 
