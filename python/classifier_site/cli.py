@@ -146,8 +146,6 @@ def predictionScoreOfTrainingSet():
 
     print "Score: ", total
     print "Total: ", max_potential
-    print "%: ", total / float(max_potential)
-    print "Frequencies: \n", frequencies
 
 
 def getPredictionScoreOfTrainingSet():
