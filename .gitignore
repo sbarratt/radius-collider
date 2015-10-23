@@ -1,4 +1,4 @@
-# Ignore large data files (find them on GDrive)
+# Ignore data files (find them on GDrive)
 data/word2vec_model
 data/brown_model
 data/reuters_model
@@ -12,8 +12,6 @@ data/classification/s6.npy
 data/classification/s7.npy
 data/classification/s8.npy
 data/classification/S.pickle
-data/algo_classified_set.csv
-data/classified_set.csv
 
 #####=== Python ===#####
 

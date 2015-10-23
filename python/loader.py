@@ -99,7 +99,7 @@ def get_hand_classifiedset():
         'fe389cac-3795-4b4c-9d09-39b77e166f5a': '444'
     }
     """
-    with open(DATA_DIR + 'hand_classified_set.csv', 'rb') as csvfile:
+    with open(DATA_DIR + 'hand_classified_set.csv', 'rU') as csvfile:
         spamreader = csv.reader(csvfile, delimiter=',')
         d = {}
         for row in spamreader:
@@ -118,7 +118,7 @@ def get_algo_classifiedset():
         'fe389cac-3795-4b4c-9d09-39b77e166f5a': '444'
     }
     """
-    with open(DATA_DIR + 'algo_classified_set.csv', 'rb') as csvfile:
+    with open(DATA_DIR + 'predictions.csv', 'rU') as csvfile:
         spamreader = csv.reader(csvfile, delimiter=',')
         d = {}
         for row in spamreader:
@@ -128,9 +128,9 @@ def get_algo_classifiedset():
 
 def reset_algo_classifiedset():
     """
-    deletes contents of the algo_classified_set
+    deletes contents of the predictions
     """
-    open(DATA_DIR + 'algo_classified_set.csv', 'w').close()
+    open(DATA_DIR + 'predictions.csv', 'w').close()
 
 
 def get_challengeset(chunk=None):
@@ -236,12 +236,12 @@ def write_row_hand_classified_set(business_uid, naics_code):
 
 
 def write_row_algo_classified_set(business_uid, naics_code):
-    with open(DATA_DIR + 'algo_classified_set.csv', 'a') as algo_classified_set:
+    with open(DATA_DIR + 'predictions.csv', 'a') as algo_classified_set:
         wr = csv.writer(algo_classified_set)
         wr.writerow((business_uid, naics_code))
 
 def write_rows_algo_classified_set(rows):
-    with open(DATA_DIR + 'algo_classified_set.csv', 'a') as algo_classified_set:
+    with open(DATA_DIR + 'predictions.csv', 'a') as algo_classified_set:
         wr = csv.writer(algo_classified_set)
         for business_uid, naics_code in rows:
             wr.writerow((business_uid, naics_code))

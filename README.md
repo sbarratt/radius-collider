@@ -50,7 +50,8 @@ Methods:
 - `loadBusinesses`: Loads all businesses into the DB
     + *chunk*: choose the chunk of all businesses [0, 1, 2]
     + *processes*: specify number of processes to use
-- `classifyBusinessWithScorer`: classifies businesses to a unique NAICS code naively
+- `classifyBusinesses`: classifies businesses to a unique NAICS code
+- `classifyBusinessesTest`: classifies businesses without using training data as free points
 - `predictionScoreOfTrainingSet`: Scores the alogrithm's prediction
 
 

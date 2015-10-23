@@ -109,11 +109,29 @@ def classifyBusinesses():
     # late import
     from scorers import Classifier
 
-    for thresh in np.arange(0, .6, .05):
-        classifier = Classifier(threshhold=thresh)
-        classifcations = classifier.classify(implement_rules=True)
-        loader.write_rows_algo_classified_set(classifcations)
-        predictionScoreOfTrainingSet()
+    loader.reset_algo_classifiedset()
+
+    thresh = 0.3
+    classifier = Classifier(threshhold=thresh)
+    classifcations = classifier.classify(implement_rules=True, use_training_data=True)
+    loader.write_rows_algo_classified_set(classifcations)
+    predictionScoreOfTrainingSet()
+
+@manager.command
+def classifyBusinessesTest():
+    """
+    Runs Classifier in scorers (most up to date classifier), without automatically classifying training data
+    """
+    # late import
+    from scorers import Classifier
+
+    loader.reset_algo_classifiedset()
+
+    thresh = 0.3
+    classifier = Classifier(threshhold=thresh)
+    classifcations = classifier.classify(implement_rules=True, use_training_data=False)
+    loader.write_rows_algo_classified_set(classifcations)
+    predictionScoreOfTrainingSet()   
 
 @manager.command
 def predictionScoreOfTrainingSet():

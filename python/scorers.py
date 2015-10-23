@@ -155,9 +155,10 @@ class Classifier:
     def __init__(self, weights_dict=DEFAULT_WEIGHTS_DICT, threshhold=DEFAULT_THRESHOLD):
         self.weights_dict = weights_dict
         self.threshhold = threshhold
+        self.hand_classified_set = loader.get_hand_classifiedset()
         print "Threshhold", threshhold
 
-    def classify(self, implement_rules = True):
+    def classify(self, implement_rules = True, use_training_data=True):
         classifications = []
 
         S = loader.get_S()
@@ -167,12 +168,14 @@ class Classifier:
         for i in xrange(10000):
             bizid = row_to_bizid[i]
             code = self.ruleBasedClassification(bizid)
+            if use_training_data:
+                code = self.hand_classified_set.get(bizid)
             if code is None or not implement_rules:
                 score = np.max(S[i, :])
                 if score > self.threshhold:
                     code = column_to_code[np.argmax(S[i, :])]
                 else:
-                    code = ''  # no guess
+                    code = 'None'  # no guess
             classifications.append( (row_to_bizid[i], code) )
 
         return classifications
