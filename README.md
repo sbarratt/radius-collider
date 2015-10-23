@@ -132,10 +132,3 @@ Methods:
     ├── handclassifier.png
     └── writeup.tex
 ```
-
-## TODO
-- optimize scoring alogrithm
-- classify 1000 by hand
-- getting the same business twice in a row (IWD Marketing)
-- writeup
-- submission
