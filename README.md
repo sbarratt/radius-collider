@@ -4,6 +4,11 @@ Link to github repo: https://github.com/sbarratt/radius-collider
 
 The NAICS Classifier consists of an **assisted classifier** and a **database viewer** to see the scores assigned to each business, as well as a CLI to score each business and assign it a NAICS code.
 
+## Downloading the classification matrices
+
+Download *.npy under classification/ from [here](goo.gl/Sei2jU)
+
+
 ## Running the server
 ```bash
 git clone <REPO>
@@ -14,10 +19,6 @@ python
 >>> quit()
 python classifier_site/app.py
 ```
-
-## Downloading the classification matrices
-
-Download *.npy under classification/ from [here](goo.gl/Sei2jU)
 
 ## Endpoints
 `/agents`:
